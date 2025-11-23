@@ -1101,3 +1101,351 @@ textarea.preview-input {
     margin-right: auto;
 }
 
+/* ==========================================================================
+   Entries Manager
+   ========================================================================== */
+
+.nexusforms-entries-manager {
+    margin-top: 20px;
+}
+
+.entries-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 20px;
+    gap: 20px;
+}
+
+.entries-filters {
+    display: flex;
+    gap: 12px;
+    flex: 1;
+    align-items: flex-end;
+}
+
+.entries-filters .components-search-control {
+    flex: 1;
+    max-width: 400px;
+}
+
+.entries-filters .components-base-control {
+    margin-bottom: 0;
+}
+
+.entries-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.entries-loading,
+.entries-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.entries-empty p {
+    color: #666;
+    margin-top: 8px;
+}
+
+.entry-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 400px;
+}
+
+.entry-field {
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.entry-field strong {
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.more-fields {
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+}
+
+.nexusforms-entry-modal {
+    max-width: 700px;
+}
+
+.entry-details {
+    padding: 20px;
+}
+
+.entry-meta {
+    background: #f9f9f9;
+    padding: 16px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.entry-meta p {
+    margin: 8px 0;
+    font-size: 14px;
+}
+
+.entry-meta strong {
+    color: #1d2327;
+    font-weight: 600;
+}
+
+.entry-data h3 {
+    font-size: 16px;
+    margin-bottom: 16px;
+    font-weight: 600;
+}
+
+.entry-data table {
+    margin-top: 12px;
+}
+
+.entry-data table th {
+    background: #f9f9f9;
+    font-weight: 600;
+    padding: 12px;
+    width: 200px;
+    text-align: left;
+}
+
+.entry-data table td {
+    padding: 12px;
+}
+
+.entry-data table ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.entry-data table pre {
+    background: #f0f0f1;
+    padding: 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    overflow-x: auto;
+}
+
+.nexusforms-confirm-modal {
+    max-width: 500px;
+}
+
+.nexusforms-confirm-modal p {
+    margin: 20px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+/* ==========================================================================
+   Form Preview
+   ========================================================================== */
+
+.nexusforms-preview-modal {
+    max-width: 800px;
+}
+
+.form-preview-container {
+    padding: 20px;
+}
+
+.preview-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+}
+
+.preview-loading p {
+    margin-top: 12px;
+    color: #666;
+}
+
+.nexusforms-wrapper.preview {
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+    padding: 32px;
+    margin: 20px 0;
+}
+
+.nexusforms-wrapper.preview .nexusforms-title {
+    font-size: 24px;
+    margin-bottom: 16px;
+    color: #1d2327;
+}
+
+.nexusforms-wrapper.preview .nexusforms-description {
+    color: #666;
+    margin-bottom: 24px;
+    line-height: 1.6;
+}
+
+.nexusforms-form-preview {
+    margin-top: 20px;
+}
+
+.nexusforms-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.nexusforms-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.nexusforms-label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1d2327;
+    display: block;
+}
+
+.nexusforms-label .required {
+    color: #d63638;
+    margin-left: 4px;
+}
+
+.nexusforms-input,
+.nexusforms-textarea,
+.nexusforms-select,
+.nexusforms-file {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #8c8f94;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #1d2327;
+    background: #fff;
+}
+
+.nexusforms-input:disabled,
+.nexusforms-textarea:disabled,
+.nexusforms-select:disabled,
+.nexusforms-file:disabled {
+    background: #f6f7f7;
+    cursor: not-allowed;
+}
+
+.nexusforms-textarea {
+    resize: vertical;
+    font-family: inherit;
+}
+
+.nexusforms-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.nexusforms-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.nexusforms-option input[type="radio"],
+.nexusforms-option input[type="checkbox"] {
+    margin: 0;
+}
+
+.nexusforms-description {
+    font-size: 13px;
+    color: #666;
+    font-style: italic;
+    margin-top: 4px;
+}
+
+.nexusforms-submit-wrapper {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #dcdcde;
+}
+
+.nexusforms-submit {
+    padding: 12px 24px;
+    background: #2271b1;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.nexusforms-submit:hover:not(:disabled) {
+    background: #135e96;
+}
+
+.nexusforms-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.preview-info {
+    background: #f9f9f9;
+    padding: 16px;
+    border-radius: 4px;
+    margin-top: 20px;
+}
+
+.preview-info p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.preview-info strong {
+    color: #1d2327;
+}
+
+.preview-info code {
+    background: #fff;
+    padding: 6px 12px;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 13px;
+    cursor: pointer;
+    user-select: all;
+    transition: background 0.2s;
+}
+
+.preview-info code:hover {
+    background: #f0f0f1;
+}
+
+.no-fields {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Modal Actions */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #dcdcde;
+}
+

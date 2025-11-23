@@ -10,6 +10,7 @@ import { __ } from '@wordpress/i18n';
 import { Button, SearchControl, Spinner, SelectControl } from '@wordpress/components';
 import { useForms, useDeleteForm, useDuplicateForm } from '../hooks/useFormApi';
 import { FormImporter } from './FormImporter';
+import { FormPreview } from './FormPreview';
 
 export const FormsList = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -155,6 +156,12 @@ export const FormsList = () => {
                                         >
                                             {__('Edit', 'nexusforms')}
                                         </Button>
+                                        <span className="separator">|</span>
+                                        <FormPreview
+                                            formId={form.id}
+                                            buttonText={__('Preview', 'nexusforms')}
+                                            buttonVariant="link"
+                                        />
                                         <span className="separator">|</span>
                                         <Button
                                             variant="link"

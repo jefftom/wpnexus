@@ -15,6 +15,7 @@ import { MultiStepManager } from './MultiStepManager';
 import { FieldTemplates } from './FieldTemplates';
 import { ImportExport } from './ImportExport';
 import { EmailBuilder } from './EmailBuilder';
+import { FormPreview } from './FormPreview';
 import { useFormStore } from '../store/formStore';
 import { useForm, useCreateForm, useUpdateForm } from '../hooks/useFormApi';
 
@@ -125,6 +126,14 @@ export const FormBuilder = ({ formId }) => {
                     <FieldTemplates />
 
                     <ImportExport formId={formId} />
+
+                    {formId && (
+                        <FormPreview
+                            formId={formId}
+                            buttonText={__('Preview', 'nexusforms')}
+                            buttonVariant="tertiary"
+                        />
+                    )}
 
                     <Button
                         variant="tertiary"

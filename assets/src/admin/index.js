@@ -9,6 +9,7 @@ import { render } from '@wordpress/element';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { FormBuilder } from './components/FormBuilder';
 import { FormsList } from './components/FormsList';
+import { EntriesManager } from './components/EntriesManager';
 import './style.css';
 
 // Create QueryClient instance
@@ -51,17 +52,13 @@ if (editorRoot) {
 }
 
 /**
- * Render entries list (placeholder for now).
+ * Render entries manager.
  */
 const entriesRoot = document.getElementById('nexusforms-entries-root');
 if (entriesRoot) {
     render(
         <QueryClientProvider client={queryClient}>
-            <div className="nexusforms-entries">
-                <h2>Entries Management</h2>
-                <p>Entries list component will be implemented here.</p>
-                <p>You can view entries using the REST API at: <code>/wp-json/nexusforms/v1/entries</code></p>
-            </div>
+            <EntriesManager />
         </QueryClientProvider>,
         entriesRoot
     );
