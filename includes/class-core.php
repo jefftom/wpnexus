@@ -118,6 +118,8 @@ final class NexusForms_Core {
         require_once NEXUSFORMS_PLUGIN_DIR . 'includes/class-api.php';
         require_once NEXUSFORMS_PLUGIN_DIR . 'includes/class-notifications.php';
         require_once NEXUSFORMS_PLUGIN_DIR . 'includes/class-file-handler.php';
+        require_once NEXUSFORMS_PLUGIN_DIR . 'includes/class-gravity-importer.php';
+        require_once NEXUSFORMS_PLUGIN_DIR . 'includes/class-wpforms-importer.php';
 
         // Admin functionality.
         if (is_admin()) {

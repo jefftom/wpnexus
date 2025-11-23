@@ -9,6 +9,7 @@ import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { Button, SearchControl, Spinner, SelectControl } from '@wordpress/components';
 import { useForms, useDeleteForm, useDuplicateForm } from '../hooks/useFormApi';
+import { FormImporter } from './FormImporter';
 
 export const FormsList = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -76,6 +77,7 @@ export const FormsList = () => {
                     <span className="total-forms">
                         {__('Total:', 'nexusforms')} <strong>{data?.total || 0}</strong>
                     </span>
+                    <FormImporter onImportSuccess={() => window.location.reload()} />
                 </div>
             </div>
 

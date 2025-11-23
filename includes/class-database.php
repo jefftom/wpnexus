@@ -66,6 +66,7 @@ class NexusForms_Database {
             id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
             form_id BIGINT UNSIGNED NOT NULL,
             entry_data JSON NOT NULL,
+            form_schema_snapshot JSON,
             user_id BIGINT UNSIGNED,
             ip_address VARCHAR(45),
             user_agent VARCHAR(255),

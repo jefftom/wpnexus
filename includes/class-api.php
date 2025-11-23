@@ -94,6 +94,20 @@ class NexusForms_API {
             'permission_callback' => [$this, 'check_permission'],
         ]);
 
+        // Import from Gravity Forms.
+        register_rest_route(self::NAMESPACE, '/forms/import/gravity', [
+            'methods' => 'POST',
+            'callback' => [$this, 'import_from_gravity'],
+            'permission_callback' => [$this, 'check_permission'],
+        ]);
+
+        // Import from WPForms.
+        register_rest_route(self::NAMESPACE, '/forms/import/wpforms', [
+            'methods' => 'POST',
+            'callback' => [$this, 'import_from_wpforms'],
+            'permission_callback' => [$this, 'check_permission'],
+        ]);
+
         // Entries endpoints.
         register_rest_route(self::NAMESPACE, '/entries', [
             'methods' => 'GET',
@@ -576,5 +590,61 @@ class NexusForms_API {
         }
 
         return $entry_data;
+    }
+
+    /**
+     * Import form from Gravity Forms.
+     *
+     * @since 1.0.0
+     * @param WP_REST_Request $request Request object.
+     * @return WP_REST_Response
+     */
+    public function import_from_gravity(WP_REST_Request $request): WP_REST_Response {
+        $json_data = $request->get_param('json');
+
+        if (!$json_data) {
+            return new WP_REST_Response([
+                'message' => __('No Gravity Forms JSON data provided.', 'nexusforms'),
+            ], 400);
+        }
+
+        $importer = new NexusForms_Gravity_Importer();
+        $result = $importer->import($json_data);
+
+        if (is_wp_error($result)) {
+            return new WP_REST_Response([
+                'message' => $result->get_error_message(),
+            ], 400);
+        }
+
+        return new WP_REST_Response($result, 201);
+    }
+
+    /**
+     * Import form from WPForms.
+     *
+     * @since 1.0.0
+     * @param WP_REST_Request $request Request object.
+     * @return WP_REST_Response
+     */
+    public function import_from_wpforms(WP_REST_Request $request): WP_REST_Response {
+        $json_data = $request->get_param('json');
+
+        if (!$json_data) {
+            return new WP_REST_Response([
+                'message' => __('No WPForms JSON data provided.', 'nexusforms'),
+            ], 400);
+        }
+
+        $importer = new NexusForms_WPForms_Importer();
+        $result = $importer->import($json_data);
+
+        if (is_wp_error($result)) {
+            return new WP_REST_Response([
+                'message' => $result->get_error_message(),
+            ], 400);
+        }
+
+        return new WP_REST_Response($result, 201);
     }
 }

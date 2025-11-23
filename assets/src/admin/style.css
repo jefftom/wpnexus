@@ -1045,3 +1045,59 @@ textarea.preview-input {
     color: #333;
 }
 
+
+/* ==========================================================================
+   Form Importer
+   ========================================================================== */
+
+.nexusforms-import-modal {
+    max-width: 700px;
+}
+
+.import-content {
+    padding: 20px;
+}
+
+.import-content p {
+    margin-bottom: 20px;
+    color: #666;
+}
+
+.import-methods h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 24px 0 12px 0;
+    color: #333;
+}
+
+.import-methods .file-upload {
+    margin: 16px 0;
+}
+
+.import-methods .file-upload input[type="file"] {
+    display: none;
+}
+
+.import-methods .file-upload label {
+    cursor: pointer;
+}
+
+.import-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #ddd;
+}
+
+.list-stats {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.list-stats .total-forms {
+    margin-right: auto;
+}
+

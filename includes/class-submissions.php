@@ -36,9 +36,26 @@ class NexusForms_Submissions {
 
         $settings = get_option('nexusforms_settings', []);
 
+        // Get form schema snapshot to preserve structure at time of submission
+        $forms = new NexusForms_Forms();
+        $form = $forms->get($form_id);
+
+        $schema_snapshot = null;
+        if ($form) {
+            $schema_snapshot = json_encode([
+                'title' => $form->title,
+                'description' => $form->description,
+                'settings' => $form->settings,
+                'fields' => $form->fields,
+                'version' => NEXUSFORMS_VERSION,
+                'snapshot_time' => current_time('mysql'),
+            ]);
+        }
+
         $data = [
             'form_id' => $form_id,
             'entry_data' => json_encode($entry_data),
+            'form_schema_snapshot' => $schema_snapshot,
             'user_id' => get_current_user_id() ?: null,
             'ip_address' => $this->get_ip_address($settings),
             'user_agent' => $this->get_user_agent(),
@@ -49,7 +66,7 @@ class NexusForms_Submissions {
         $result = $wpdb->insert(
             $table,
             $data,
-            ['%d', '%s', '%d', '%s', '%s', '%s', '%s']
+            ['%d', '%s', '%s', '%d', '%s', '%s', '%s', '%s']
         );
 
         if ($result) {
@@ -89,6 +106,9 @@ class NexusForms_Submissions {
 
         if ($entry) {
             $entry->entry_data = json_decode($entry->entry_data, true);
+            $entry->form_schema_snapshot = $entry->form_schema_snapshot
+                ? json_decode($entry->form_schema_snapshot)
+                : null;
         }
 
         return $entry ?: null;
