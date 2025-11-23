@@ -7,10 +7,13 @@
 
 import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { Button, Modal, TextControl, TextareaControl, SelectControl, Spinner } from '@wordpress/components';
+import { Button, Modal, TextControl, TextareaControl, SelectControl, Spinner, TabPanel } from '@wordpress/components';
 import { FieldPalette } from './FieldPalette';
 import { FormCanvas } from './FormCanvas';
 import { FieldSettings } from './FieldSettings';
+import { MultiStepManager } from './MultiStepManager';
+import { FieldTemplates } from './FieldTemplates';
+import { ImportExport } from './ImportExport';
 import { useFormStore } from '../store/formStore';
 import { useForm, useCreateForm, useUpdateForm } from '../hooks/useFormApi';
 
@@ -118,6 +121,10 @@ export const FormBuilder = ({ formId }) => {
                 </div>
 
                 <div className="header-actions">
+                    <FieldTemplates />
+
+                    <ImportExport formId={formId} />
+
                     <Button
                         variant="tertiary"
                         onClick={() => setShowSettings(true)}
@@ -160,37 +167,62 @@ export const FormBuilder = ({ formId }) => {
                     onRequestClose={() => setShowSettings(false)}
                     className="nexusforms-settings-modal"
                 >
-                    <div className="modal-content">
-                        <TextControl
-                            label={__('Form Title', 'nexusforms')}
-                            value={formTitle}
-                            onChange={setFormTitle}
-                        />
+                    <TabPanel
+                        tabs={[
+                            {
+                                name: 'general',
+                                title: __('General', 'nexusforms'),
+                            },
+                            {
+                                name: 'multi-step',
+                                title: __('Multi-Step', 'nexusforms'),
+                            },
+                        ]}
+                    >
+                        {(tab) => (
+                            <div className="tab-content">
+                                {tab.name === 'general' && (
+                                    <div className="modal-content">
+                                        <TextControl
+                                            label={__('Form Title', 'nexusforms')}
+                                            value={formTitle}
+                                            onChange={setFormTitle}
+                                        />
 
-                        <TextareaControl
-                            label={__('Form Description', 'nexusforms')}
-                            value={formDescription}
-                            onChange={setFormDescription}
-                            rows={4}
-                        />
+                                        <TextareaControl
+                                            label={__('Form Description', 'nexusforms')}
+                                            value={formDescription}
+                                            onChange={setFormDescription}
+                                            rows={4}
+                                        />
 
-                        <SelectControl
-                            label={__('Form Status', 'nexusforms')}
-                            value={formStatus}
-                            options={[
-                                { label: __('Draft', 'nexusforms'), value: 'draft' },
-                                { label: __('Active', 'nexusforms'), value: 'active' },
-                                { label: __('Inactive', 'nexusforms'), value: 'inactive' },
-                            ]}
-                            onChange={setFormStatus}
-                        />
+                                        <SelectControl
+                                            label={__('Form Status', 'nexusforms')}
+                                            value={formStatus}
+                                            options={[
+                                                { label: __('Draft', 'nexusforms'), value: 'draft' },
+                                                { label: __('Active', 'nexusforms'), value: 'active' },
+                                                { label: __('Inactive', 'nexusforms'), value: 'inactive' },
+                                            ]}
+                                            onChange={setFormStatus}
+                                        />
+                                    </div>
+                                )}
 
-                        <div className="modal-actions">
-                            <Button variant="secondary" onClick={() => setShowSettings(false)}>
-                                {__('Close', 'nexusforms')}
-                            </Button>
-                        </div>
-                    </div>
+                                {tab.name === 'multi-step' && (
+                                    <div className="modal-content">
+                                        <MultiStepManager />
+                                    </div>
+                                )}
+
+                                <div className="modal-actions">
+                                    <Button variant="secondary" onClick={() => setShowSettings(false)}>
+                                        {__('Close', 'nexusforms')}
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                    </TabPanel>
                 </Modal>
             )}
         </div>

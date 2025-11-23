@@ -15,6 +15,7 @@ import {
     SelectControl,
 } from '@wordpress/components';
 import { useFormStore } from '../store/formStore';
+import { ConditionalLogic } from './ConditionalLogic';
 
 const OptionEditor = ({ options, onChange }) => {
     const handleAddOption = () => {
@@ -201,6 +202,10 @@ export const FieldSettings = () => {
                         )}
                     </PanelBody>
                 )}
+
+                <PanelBody title={__('Conditional Logic', 'nexusforms')}>
+                    <ConditionalLogic fieldId={selectedField.id} />
+                </PanelBody>
             </div>
         </div>
     );
