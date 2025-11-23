@@ -14,6 +14,7 @@ import { FieldSettings } from './FieldSettings';
 import { MultiStepManager } from './MultiStepManager';
 import { FieldTemplates } from './FieldTemplates';
 import { ImportExport } from './ImportExport';
+import { EmailBuilder } from './EmailBuilder';
 import { useFormStore } from '../store/formStore';
 import { useForm, useCreateForm, useUpdateForm } from '../hooks/useFormApi';
 
@@ -174,6 +175,10 @@ export const FormBuilder = ({ formId }) => {
                                 title: __('General', 'nexusforms'),
                             },
                             {
+                                name: 'email',
+                                title: __('Email', 'nexusforms'),
+                            },
+                            {
                                 name: 'multi-step',
                                 title: __('Multi-Step', 'nexusforms'),
                             },
@@ -206,6 +211,12 @@ export const FormBuilder = ({ formId }) => {
                                             ]}
                                             onChange={setFormStatus}
                                         />
+                                    </div>
+                                )}
+
+                                {tab.name === 'email' && (
+                                    <div className="modal-content">
+                                        <EmailBuilder />
                                     </div>
                                 )}
 

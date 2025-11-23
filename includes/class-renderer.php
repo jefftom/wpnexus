@@ -245,6 +245,11 @@ class NexusForms_Renderer {
         $form = $forms->get($form_id);
 
         $entry_data = [];
+        $file_handler = nexusforms()->file_handler;
+
+        // First pass: Create entry ID for file uploads
+        // We'll use a temporary ID of 0 and update files later if needed
+        $entry_id = 0;
 
         foreach ($form->fields as $field) {
             $field_id = $field->field_data['id'];
@@ -269,6 +274,46 @@ class NexusForms_Renderer {
                     $entry_data[$field_id] = is_array($value)
                         ? array_map('sanitize_text_field', $value)
                         : sanitize_text_field($value);
+                    break;
+                case 'file':
+                    // Handle file upload
+                    if (isset($_FILES[$field_id]) && !empty($_FILES[$field_id]['name'])) {
+                        $field_settings = $field->field_data;
+
+                        // Check if multiple files
+                        if (is_array($_FILES[$field_id]['name'])) {
+                            $upload_results = $file_handler->handle_multiple_uploads(
+                                $_FILES[$field_id],
+                                $form_id,
+                                $entry_id,
+                                $field_settings
+                            );
+                        } else {
+                            $upload_result = $file_handler->handle_upload(
+                                $_FILES[$field_id],
+                                $form_id,
+                                $entry_id,
+                                $field_settings
+                            );
+                            $upload_results = $upload_result ? [$upload_result] : [];
+                        }
+
+                        // Store file information
+                        $entry_data[$field_id] = [];
+                        foreach ($upload_results as $result) {
+                            if (isset($result['success']) && $result['success']) {
+                                $entry_data[$field_id][] = [
+                                    'filename' => $result['filename'],
+                                    'original_name' => $result['original_name'],
+                                    'url' => $result['url'],
+                                    'size' => $result['size'],
+                                    'type' => $result['type'],
+                                ];
+                            }
+                        }
+                    } else {
+                        $entry_data[$field_id] = [];
+                    }
                     break;
                 default:
                     $entry_data[$field_id] = sanitize_text_field($value);
@@ -394,6 +439,26 @@ class NexusForms_Renderer {
                 }
                 $html .= '</div>';
                 return $html;
+
+            case 'file':
+                $multiple = $field['multiple'] ?? false;
+                $accept = '';
+
+                // Build accept attribute from allowed file types
+                if (!empty($field['allowedFileTypes'])) {
+                    $extensions = [];
+                    foreach ($field['allowedFileTypes'] as $ext) {
+                        $extensions[] = '.' . $ext;
+                    }
+                    $accept = 'accept="' . esc_attr(implode(',', $extensions)) . '"';
+                }
+
+                return sprintf(
+                    '<input type="file" %s %s %s class="nexusforms-input nexusforms-file">',
+                    $attrs,
+                    $multiple ? 'multiple' : '',
+                    $accept
+                );
 
             default:
                 return sprintf(

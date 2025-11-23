@@ -203,6 +203,47 @@ export const FieldSettings = () => {
                     </PanelBody>
                 )}
 
+                {selectedField.type === 'file' && (
+                    <PanelBody title={__('File Upload Settings', 'nexusforms')}>
+                        <ToggleControl
+                            label={__('Allow Multiple Files', 'nexusforms')}
+                            checked={selectedField.multiple || false}
+                            onChange={(value) => handleUpdate('multiple', value)}
+                        />
+
+                        {selectedField.multiple && (
+                            <TextControl
+                                label={__('Maximum Files', 'nexusforms')}
+                                type="number"
+                                value={selectedField.maxFiles || '5'}
+                                onChange={(value) => handleUpdate('maxFiles', parseInt(value) || 5)}
+                                help={__('Maximum number of files that can be uploaded', 'nexusforms')}
+                            />
+                        )}
+
+                        <TextControl
+                            label={__('Maximum File Size (MB)', 'nexusforms')}
+                            type="number"
+                            value={selectedField.maxFileSize ? selectedField.maxFileSize / 1048576 : '10'}
+                            onChange={(value) => handleUpdate('maxFileSize', (parseFloat(value) || 10) * 1048576)}
+                            help={__('Maximum size per file in megabytes', 'nexusforms')}
+                        />
+
+                        <TextControl
+                            label={__('Allowed File Types', 'nexusforms')}
+                            value={(selectedField.allowedFileTypes || []).join(', ')}
+                            onChange={(value) =>
+                                handleUpdate('allowedFileTypes', value.split(',').map(s => s.trim()).filter(Boolean))
+                            }
+                            help={__(
+                                'Comma-separated list (e.g., jpg, png, pdf). Leave empty to allow all common types.',
+                                'nexusforms'
+                            )}
+                            placeholder="jpg, png, pdf, doc, docx"
+                        />
+                    </PanelBody>
+                )}
+
                 <PanelBody title={__('Conditional Logic', 'nexusforms')}>
                     <ConditionalLogic fieldId={selectedField.id} />
                 </PanelBody>

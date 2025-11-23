@@ -61,6 +61,13 @@ final class NexusForms_Core {
     public NexusForms_API $api;
 
     /**
+     * File handler instance.
+     *
+     * @var NexusForms_File_Handler
+     */
+    public NexusForms_File_Handler $file_handler;
+
+    /**
      * Main NexusForms Instance.
      *
      * Ensures only one instance of NexusForms is loaded or can be loaded.
@@ -110,6 +117,7 @@ final class NexusForms_Core {
         require_once NEXUSFORMS_PLUGIN_DIR . 'includes/class-validator.php';
         require_once NEXUSFORMS_PLUGIN_DIR . 'includes/class-api.php';
         require_once NEXUSFORMS_PLUGIN_DIR . 'includes/class-notifications.php';
+        require_once NEXUSFORMS_PLUGIN_DIR . 'includes/class-file-handler.php';
 
         // Admin functionality.
         if (is_admin()) {
@@ -148,6 +156,10 @@ final class NexusForms_Core {
         $this->renderer = new NexusForms_Renderer();
         $this->validator = new NexusForms_Validator();
         $this->api = new NexusForms_API();
+        $this->file_handler = new NexusForms_File_Handler();
+
+        // Initialize file handler hooks
+        $this->file_handler->init();
 
         // Initialize integrations.
         NexusForms_Integrations::instance();

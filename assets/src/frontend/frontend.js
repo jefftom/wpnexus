@@ -59,12 +59,13 @@
 
             try {
                 const formData = new FormData($form[0]);
-                const data = Object.fromEntries(formData.entries());
 
                 const response = await $.ajax({
                     url: nexusformsData.ajaxUrl,
                     type: 'POST',
-                    data: data,
+                    data: formData,
+                    processData: false,
+                    contentType: false,
                 });
 
                 // Success.
