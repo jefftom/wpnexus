@@ -124,9 +124,9 @@ class NexusForms_File_Handler {
      *
      * @param array $file $_FILES array entry
      * @param array $field_settings Field configuration
-     * @return array|true True if valid, error array if invalid
+     * @return array|bool True if valid, error array if invalid
      */
-    public function validate_file(array $file, array $field_settings = []): array|true {
+    public function validate_file(array $file, array $field_settings = []): array|bool {
         // Check for upload errors
         if (!isset($file['error']) || is_array($file['error'])) {
             return ['error' => __('Invalid file upload.', 'nexusforms')];
