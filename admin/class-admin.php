@@ -106,7 +106,7 @@ class NexusForms_Admin {
         // Enqueue admin styles.
         wp_enqueue_style(
             'nexusforms-admin',
-            NEXUSFORMS_PLUGIN_URL . 'assets/build/admin.css',
+            NEXUSFORMS_PLUGIN_URL . 'assets/build/style-admin.css',
             ['wp-components'],
             NEXUSFORMS_VERSION
         );
