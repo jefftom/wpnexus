@@ -1,0 +1,18 @@
+# Copyright (C) 2024 NexusForms Team
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: NexusForms 1.0.0\n"
+"Report-Msgid-Bugs-To: https://nexusforms.com/support\n"
+"POT-Creation-Date: 2024-11-23 00:00:00+00:00\n"
+"Language-Team: NexusForms <support@nexusforms.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: nexusforms.php
+msgid "NexusForms: WordPress Form Builder"
+msgstr ""
+
+msgid "A modern, high-performance WordPress form builder"
+msgstr ""

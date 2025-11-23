@@ -1,0 +1,338 @@
+<?php
+/**
+ * Submissions management class.
+ *
+ * @package NexusForms
+ * @since 1.0.0
+ */
+
+// Exit if accessed directly.
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+/**
+ * NexusForms Submissions Class.
+ *
+ * Handles form submission (entry) operations.
+ *
+ * @since 1.0.0
+ */
+class NexusForms_Submissions {
+
+    /**
+     * Create a new submission.
+     *
+     * @since 1.0.0
+     * @param int $form_id Form ID.
+     * @param array $entry_data Entry data.
+     * @param array $meta Additional metadata.
+     * @return int|false Entry ID on success, false on failure.
+     */
+    public function create(int $form_id, array $entry_data, array $meta = []): int|false {
+        global $wpdb;
+
+        $table = NexusForms_Database::get_table_name('entries');
+
+        $settings = get_option('nexusforms_settings', []);
+
+        $data = [
+            'form_id' => $form_id,
+            'entry_data' => json_encode($entry_data),
+            'user_id' => get_current_user_id() ?: null,
+            'ip_address' => $this->get_ip_address($settings),
+            'user_agent' => $this->get_user_agent(),
+            'status' => $meta['status'] ?? 'active',
+            'created_at' => current_time('mysql'),
+        ];
+
+        $result = $wpdb->insert(
+            $table,
+            $data,
+            ['%d', '%s', '%d', '%s', '%s', '%s', '%s']
+        );
+
+        if ($result) {
+            $entry_id = $wpdb->insert_id;
+
+            /**
+             * Fires after a submission is created.
+             *
+             * @since 1.0.0
+             * @param int $entry_id Entry ID.
+             * @param int $form_id Form ID.
+             * @param array $entry_data Entry data.
+             */
+            do_action('nexusforms_submission_created', $entry_id, $form_id, $entry_data);
+
+            return $entry_id;
+        }
+
+        return false;
+    }
+
+    /**
+     * Get a submission by ID.
+     *
+     * @since 1.0.0
+     * @param int $entry_id Entry ID.
+     * @return object|null Entry object or null if not found.
+     */
+    public function get(int $entry_id): ?object {
+        global $wpdb;
+        $table = NexusForms_Database::get_table_name('entries');
+
+        $entry = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$table} WHERE id = %d",
+            $entry_id
+        ));
+
+        if ($entry) {
+            $entry->entry_data = json_decode($entry->entry_data, true);
+        }
+
+        return $entry ?: null;
+    }
+
+    /**
+     * Get all submissions for a form.
+     *
+     * @since 1.0.0
+     * @param int $form_id Form ID.
+     * @param array $args Query arguments.
+     * @return array Array of entry objects.
+     */
+    public function get_by_form(int $form_id, array $args = []): array {
+        global $wpdb;
+        $table = NexusForms_Database::get_table_name('entries');
+
+        $defaults = [
+            'status' => 'active',
+            'orderby' => 'created_at',
+            'order' => 'DESC',
+            'limit' => 100,
+            'offset' => 0,
+        ];
+
+        $args = wp_parse_args($args, $defaults);
+
+        $where = $wpdb->prepare("WHERE form_id = %d", $form_id);
+
+        if ($args['status']) {
+            $where .= $wpdb->prepare(" AND status = %s", $args['status']);
+        }
+
+        $query = "SELECT * FROM {$table}
+                  {$where}
+                  ORDER BY {$args['orderby']} {$args['order']}
+                  LIMIT %d OFFSET %d";
+
+        $entries = $wpdb->get_results($wpdb->prepare(
+            $query,
+            $args['limit'],
+            $args['offset']
+        ));
+
+        // Decode entry data.
+        foreach ($entries as $entry) {
+            $entry->entry_data = json_decode($entry->entry_data, true);
+        }
+
+        return $entries;
+    }
+
+    /**
+     * Update a submission.
+     *
+     * @since 1.0.0
+     * @param int $entry_id Entry ID.
+     * @param array $data Data to update.
+     * @return bool True on success, false on failure.
+     */
+    public function update(int $entry_id, array $data): bool {
+        global $wpdb;
+        $table = NexusForms_Database::get_table_name('entries');
+
+        // Ensure entry_data is JSON.
+        if (isset($data['entry_data']) && is_array($data['entry_data'])) {
+            $data['entry_data'] = json_encode($data['entry_data']);
+        }
+
+        $result = $wpdb->update(
+            $table,
+            $data,
+            ['id' => $entry_id],
+            null,
+            ['%d']
+        );
+
+        if (false !== $result) {
+            /**
+             * Fires after a submission is updated.
+             *
+             * @since 1.0.0
+             * @param int $entry_id Entry ID.
+             * @param array $data Entry data.
+             */
+            do_action('nexusforms_submission_updated', $entry_id, $data);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Delete a submission.
+     *
+     * @since 1.0.0
+     * @param int $entry_id Entry ID.
+     * @return bool True on success, false on failure.
+     */
+    public function delete(int $entry_id): bool {
+        global $wpdb;
+        $table = NexusForms_Database::get_table_name('entries');
+
+        $result = $wpdb->delete($table, ['id' => $entry_id], ['%d']);
+
+        if ($result) {
+            /**
+             * Fires after a submission is deleted.
+             *
+             * @since 1.0.0
+             * @param int $entry_id Entry ID.
+             */
+            do_action('nexusforms_submission_deleted', $entry_id);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Get submissions count for a form.
+     *
+     * @since 1.0.0
+     * @param int $form_id Form ID.
+     * @param string $status Entry status.
+     * @return int Number of entries.
+     */
+    public function get_count(int $form_id, string $status = ''): int {
+        global $wpdb;
+        $table = NexusForms_Database::get_table_name('entries');
+
+        if ($status) {
+            return (int) $wpdb->get_var($wpdb->prepare(
+                "SELECT COUNT(*) FROM {$table} WHERE form_id = %d AND status = %s",
+                $form_id,
+                $status
+            ));
+        }
+
+        return (int) $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$table} WHERE form_id = %d",
+            $form_id
+        ));
+    }
+
+    /**
+     * Export submissions to CSV.
+     *
+     * @since 1.0.0
+     * @param int $form_id Form ID.
+     * @return string CSV content.
+     */
+    public function export_to_csv(int $form_id): string {
+        $entries = $this->get_by_form($form_id, ['limit' => 9999]);
+
+        if (empty($entries)) {
+            return '';
+        }
+
+        // Get form to get field labels.
+        $forms = new NexusForms_Forms();
+        $form = $forms->get($form_id);
+
+        // Build CSV header.
+        $headers = ['Entry ID', 'Date'];
+        $field_keys = [];
+
+        foreach ($form->fields as $field) {
+            $headers[] = $field->field_data['label'] ?? $field->field_data['id'];
+            $field_keys[] = $field->field_data['id'];
+        }
+
+        $headers[] = 'IP Address';
+        $headers[] = 'User Agent';
+
+        // Build CSV rows.
+        $csv = fopen('php://temp/maxmemory:' . (5 * 1024 * 1024), 'r+');
+        fputcsv($csv, $headers);
+
+        foreach ($entries as $entry) {
+            $row = [$entry->id, $entry->created_at];
+
+            foreach ($field_keys as $key) {
+                $value = $entry->entry_data[$key] ?? '';
+                $row[] = is_array($value) ? implode(', ', $value) : $value;
+            }
+
+            $row[] = $entry->ip_address;
+            $row[] = $entry->user_agent;
+
+            fputcsv($csv, $row);
+        }
+
+        rewind($csv);
+        $output = stream_get_contents($csv);
+        fclose($csv);
+
+        return $output;
+    }
+
+    /**
+     * Get user IP address.
+     *
+     * @since 1.0.0
+     * @param array $settings Plugin settings.
+     * @return string|null IP address or null.
+     */
+    private function get_ip_address(array $settings): ?string {
+        if (isset($settings['store_ip_addresses']) && !$settings['store_ip_addresses']) {
+            return null;
+        }
+
+        $ip_keys = [
+            'HTTP_CF_CONNECTING_IP', // Cloudflare
+            'HTTP_X_FORWARDED_FOR',
+            'HTTP_X_REAL_IP',
+            'REMOTE_ADDR',
+        ];
+
+        foreach ($ip_keys as $key) {
+            if (!empty($_SERVER[$key])) {
+                $ip = $_SERVER[$key];
+                // Handle comma-separated IPs.
+                if (strpos($ip, ',') !== false) {
+                    $ip = trim(explode(',', $ip)[0]);
+                }
+                if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                    return $ip;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get user agent.
+     *
+     * @since 1.0.0
+     * @return string|null User agent or null.
+     */
+    private function get_user_agent(): ?string {
+        return $_SERVER['HTTP_USER_AGENT'] ?? null;
+    }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "nexusforms",
+  "version": "1.0.0",
+  "description": "A modern, high-performance WordPress form builder",
+  "author": "NexusForms Team",
+  "license": "GPL-2.0-or-later",
+  "scripts": {
+    "start": "wp-scripts start",
+    "build": "wp-scripts build",
+    "lint:js": "wp-scripts lint-js",
+    "lint:css": "wp-scripts lint-style",
+    "format": "wp-scripts format",
+    "test": "wp-scripts test-unit-js"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@wordpress/scripts": "^26.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.0.0",
+    "@wordpress/api-fetch": "^6.0.0",
+    "@wordpress/components": "^25.0.0",
+    "@wordpress/element": "^5.0.0",
+    "@wordpress/i18n": "^4.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-beautiful-dnd": "^13.1.1",
+    "zustand": "^4.4.0"
+  }
+}

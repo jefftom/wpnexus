@@ -1,0 +1,244 @@
+/**
+ * Frontend styles for NexusForms.
+ *
+ * @package NexusForms
+ * @since 1.0.0
+ */
+
+/* Form wrapper */
+.nexusforms-wrapper {
+    margin: 2rem 0;
+    max-width: 800px;
+}
+
+/* Form title */
+.nexusforms-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #1e293b;
+}
+
+/* Form description */
+.nexusforms-description {
+    font-size: 1rem;
+    color: #64748b;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+/* Form */
+.nexusforms-form {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Fields container */
+.nexusforms-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Individual field */
+.nexusforms-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Label */
+.nexusforms-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #334155;
+    display: block;
+}
+
+.nexusforms-label .required {
+    color: #dc2626;
+    margin-left: 0.25rem;
+}
+
+/* Input fields */
+.nexusforms-input,
+.nexusforms-textarea,
+.nexusforms-select {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #1e293b;
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.nexusforms-input:focus,
+.nexusforms-textarea:focus,
+.nexusforms-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.nexusforms-textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Error state */
+.nexusforms-input.error,
+.nexusforms-textarea.error,
+.nexusforms-select.error {
+    border-color: #dc2626;
+}
+
+.nexusforms-input.error:focus,
+.nexusforms-textarea.error:focus,
+.nexusforms-select.error:focus {
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+/* Field description */
+.nexusforms-description {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+}
+
+/* Error message */
+.nexusforms-error {
+    font-size: 0.875rem;
+    color: #dc2626;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+/* Radio and checkbox options */
+.nexusforms-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.nexusforms-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+    color: #334155;
+    cursor: pointer;
+}
+
+.nexusforms-option input[type="radio"],
+.nexusforms-option input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+    cursor: pointer;
+}
+
+/* Submit button */
+.nexusforms-submit-wrapper {
+    margin-top: 1.5rem;
+}
+
+.nexusforms-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #ffffff;
+    background-color: #3b82f6;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.nexusforms-submit:hover {
+    background-color: #2563eb;
+}
+
+.nexusforms-submit:active {
+    transform: scale(0.98);
+}
+
+.nexusforms-submit:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.nexusforms-submit-spinner {
+    display: none;
+}
+
+/* Form message */
+.nexusforms-message {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: 6px;
+    font-size: 0.9375rem;
+    display: none;
+}
+
+.nexusforms-message.success {
+    background-color: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+}
+
+.nexusforms-message.error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .nexusforms-form {
+        padding: 1.5rem;
+    }
+
+    .nexusforms-title {
+        font-size: 1.5rem;
+    }
+
+    .nexusforms-submit {
+        width: 100%;
+    }
+}
+
+/* Accessibility - Focus visible */
+.nexusforms-input:focus-visible,
+.nexusforms-textarea:focus-visible,
+.nexusforms-select:focus-visible,
+.nexusforms-submit:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .nexusforms-input,
+    .nexusforms-textarea,
+    .nexusforms-select {
+        border-width: 2px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .nexusforms-input,
+    .nexusforms-textarea,
+    .nexusforms-select,
+    .nexusforms-submit {
+        transition: none;
+    }
+}
