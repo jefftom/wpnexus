@@ -2,8 +2,8 @@
 node_modules/
 vendor/
 
-# Build files
-assets/build/
+# Build files - keep assets/build for WordPress plugin distribution
+# assets/build/
 *.min.js
 *.min.css
 
