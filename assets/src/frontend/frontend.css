@@ -242,3 +242,103 @@
         transition: none;
     }
 }
+
+/* ==========================================================================
+   Advanced Field Types
+   ========================================================================== */
+
+/* Rating field */
+.nexusforms-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 2rem;
+    user-select: none;
+}
+
+.rating-star {
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.1s;
+}
+
+.rating-star:hover,
+.rating-star.hover {
+    color: #fbbf24;
+    transform: scale(1.1);
+}
+
+.rating-star.selected {
+    color: #f59e0b;
+}
+
+/* Signature field */
+.nexusforms-signature-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.nexusforms-signature-canvas {
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    background-color: #f8fafc;
+    cursor: crosshair;
+    touch-action: none;
+    width: 100%;
+    max-width: 600px;
+    height: 200px;
+}
+
+.nexusforms-signature-canvas:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.signature-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.signature-clear {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #64748b;
+    background-color: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.signature-clear:hover {
+    background-color: #e2e8f0;
+    color: #475569;
+}
+
+.signature-clear:active {
+    transform: scale(0.98);
+}
+
+/* Date picker */
+.nexusforms-date {
+    max-width: 300px;
+}
+
+/* Hidden field - should not be visible */
+.nexusforms-field-hidden {
+    display: none;
+}
+
+/* Responsive adjustments for advanced fields */
+@media (max-width: 640px) {
+    .nexusforms-rating {
+        font-size: 1.75rem;
+    }
+
+    .nexusforms-signature-canvas {
+        height: 150px;
+    }
+}

@@ -315,6 +315,19 @@ class NexusForms_Renderer {
                         $entry_data[$field_id] = [];
                     }
                     break;
+                case 'date':
+                    $entry_data[$field_id] = sanitize_text_field($value);
+                    break;
+                case 'rating':
+                    $entry_data[$field_id] = intval($value);
+                    break;
+                case 'signature':
+                    // Signature is stored as base64 image data
+                    $entry_data[$field_id] = sanitize_textarea_field($value);
+                    break;
+                case 'hidden':
+                    $entry_data[$field_id] = sanitize_text_field($value);
+                    break;
                 default:
                     $entry_data[$field_id] = sanitize_text_field($value);
             }
@@ -458,6 +471,61 @@ class NexusForms_Renderer {
                     $attrs,
                     $multiple ? 'multiple' : '',
                     $accept
+                );
+
+            case 'date':
+                return sprintf(
+                    '<input type="date" %s class="nexusforms-input nexusforms-date">',
+                    $attrs
+                );
+
+            case 'rating':
+                $max_rating = $field['maxRating'] ?? 5;
+                $html = '<div class="nexusforms-rating" data-field-id="' . esc_attr($id) . '">';
+                for ($i = 1; $i <= $max_rating; $i++) {
+                    $html .= sprintf(
+                        '<span class="rating-star" data-value="%d">★</span>',
+                        $i
+                    );
+                }
+                $html .= sprintf(
+                    '<input type="hidden" name="%s" id="%s" value="" %s>',
+                    esc_attr($name),
+                    esc_attr($id),
+                    $required ? 'required' : ''
+                );
+                $html .= '</div>';
+                return $html;
+
+            case 'signature':
+                $html = '<div class="nexusforms-signature-wrapper">';
+                $html .= sprintf(
+                    '<canvas class="nexusforms-signature-canvas" id="%s-canvas" width="600" height="200"></canvas>',
+                    esc_attr($id)
+                );
+                $html .= sprintf(
+                    '<input type="hidden" name="%s" id="%s" value="" %s>',
+                    esc_attr($name),
+                    esc_attr($id),
+                    $required ? 'required' : ''
+                );
+                $html .= '<div class="signature-controls">';
+                $html .= sprintf(
+                    '<button type="button" class="signature-clear" data-canvas="%s-canvas">%s</button>',
+                    esc_attr($id),
+                    esc_html__('Clear', 'nexusforms')
+                );
+                $html .= '</div>';
+                $html .= '</div>';
+                return $html;
+
+            case 'hidden':
+                $default_value = $field['defaultValue'] ?? '';
+                return sprintf(
+                    '<input type="hidden" name="%s" id="%s" value="%s">',
+                    esc_attr($name),
+                    esc_attr($id),
+                    esc_attr($default_value)
                 );
 
             default:

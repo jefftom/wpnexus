@@ -25,6 +25,15 @@
         bindEvents() {
             $(document).on('submit', '.nexusforms-form', this.handleSubmit.bind(this));
             $(document).on('change', '.nexusforms-input', this.handleFieldChange.bind(this));
+
+            // Rating field events
+            $(document).on('click', '.rating-star', this.handleRatingClick.bind(this));
+            $(document).on('mouseenter', '.rating-star', this.handleRatingHover.bind(this));
+            $(document).on('mouseleave', '.nexusforms-rating', this.handleRatingLeave.bind(this));
+
+            // Signature field events
+            this.initSignatureFields();
+            $(document).on('click', '.signature-clear', this.handleSignatureClear.bind(this));
         },
 
         /**
@@ -162,6 +171,168 @@
         showFieldError($field, $error, message) {
             $field.addClass('error').attr('aria-invalid', 'true');
             $error.html(message);
+        },
+
+        /**
+         * Handle rating star click.
+         *
+         * @param {Event} e Click event.
+         */
+        handleRatingClick(e) {
+            const $star = $(e.target);
+            const $rating = $star.closest('.nexusforms-rating');
+            const value = $star.data('value');
+            const fieldId = $rating.data('field-id');
+
+            // Update hidden input
+            $rating.find('input[type="hidden"]').val(value);
+
+            // Update visual stars
+            $rating.find('.rating-star').each(function (index) {
+                if (index < value) {
+                    $(this).addClass('selected');
+                } else {
+                    $(this).removeClass('selected');
+                }
+            });
+        },
+
+        /**
+         * Handle rating star hover.
+         *
+         * @param {Event} e Hover event.
+         */
+        handleRatingHover(e) {
+            const $star = $(e.target);
+            const $rating = $star.closest('.nexusforms-rating');
+            const value = $star.data('value');
+
+            // Update visual stars
+            $rating.find('.rating-star').each(function (index) {
+                if (index < value) {
+                    $(this).addClass('hover');
+                } else {
+                    $(this).removeClass('hover');
+                }
+            });
+        },
+
+        /**
+         * Handle rating leave.
+         *
+         * @param {Event} e Leave event.
+         */
+        handleRatingLeave(e) {
+            const $rating = $(e.target).closest('.nexusforms-rating');
+            $rating.find('.rating-star').removeClass('hover');
+        },
+
+        /**
+         * Initialize signature fields.
+         */
+        initSignatureFields() {
+            $('.nexusforms-signature-canvas').each(function () {
+                const canvas = this;
+                const ctx = canvas.getContext('2d');
+                let isDrawing = false;
+                let lastX = 0;
+                let lastY = 0;
+
+                // Set up canvas
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                // Mouse events
+                $(canvas).on('mousedown', function (e) {
+                    isDrawing = true;
+                    const rect = canvas.getBoundingClientRect();
+                    lastX = e.clientX - rect.left;
+                    lastY = e.clientY - rect.top;
+                });
+
+                $(canvas).on('mousemove', function (e) {
+                    if (!isDrawing) return;
+
+                    const rect = canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    ctx.beginPath();
+                    ctx.moveTo(lastX, lastY);
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+
+                    lastX = x;
+                    lastY = y;
+
+                    // Update hidden input with base64 data
+                    const $input = $(canvas).siblings('input[type="hidden"]');
+                    $input.val(canvas.toDataURL());
+                });
+
+                $(canvas).on('mouseup mouseleave', function () {
+                    isDrawing = false;
+                });
+
+                // Touch events
+                $(canvas).on('touchstart', function (e) {
+                    e.preventDefault();
+                    isDrawing = true;
+                    const rect = canvas.getBoundingClientRect();
+                    const touch = e.touches[0];
+                    lastX = touch.clientX - rect.left;
+                    lastY = touch.clientY - rect.top;
+                });
+
+                $(canvas).on('touchmove', function (e) {
+                    e.preventDefault();
+                    if (!isDrawing) return;
+
+                    const rect = canvas.getBoundingClientRect();
+                    const touch = e.touches[0];
+                    const x = touch.clientX - rect.left;
+                    const y = touch.clientY - rect.top;
+
+                    ctx.beginPath();
+                    ctx.moveTo(lastX, lastY);
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+
+                    lastX = x;
+                    lastY = y;
+
+                    // Update hidden input with base64 data
+                    const $input = $(canvas).siblings('input[type="hidden"]');
+                    $input.val(canvas.toDataURL());
+                });
+
+                $(canvas).on('touchend', function () {
+                    isDrawing = false;
+                });
+            });
+        },
+
+        /**
+         * Handle signature clear.
+         *
+         * @param {Event} e Click event.
+         */
+        handleSignatureClear(e) {
+            e.preventDefault();
+            const $button = $(e.target);
+            const canvasId = $button.data('canvas');
+            const canvas = document.getElementById(canvasId);
+
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Clear hidden input
+                const $input = $(canvas).siblings('input[type="hidden"]');
+                $input.val('');
+            }
         },
     };
 

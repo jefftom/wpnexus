@@ -133,6 +133,49 @@ export const FormPreview = ({ formId, buttonText, buttonVariant = 'secondary' })
                     <input type="file" className="nexusforms-input nexusforms-file" disabled />
                 )}
 
+                {type === 'date' && (
+                    <input
+                        type="date"
+                        className="nexusforms-input nexusforms-date"
+                        disabled
+                    />
+                )}
+
+                {type === 'rating' && (
+                    <div className="nexusforms-rating">
+                        {[...Array(fieldData.maxRating || 5)].map((_, index) => (
+                            <span key={index} className="rating-star" style={{ color: '#cbd5e1' }}>
+                                ★
+                            </span>
+                        ))}
+                    </div>
+                )}
+
+                {type === 'signature' && (
+                    <div className="nexusforms-signature-wrapper">
+                        <canvas
+                            className="nexusforms-signature-canvas"
+                            width="600"
+                            height="200"
+                            style={{
+                                border: '2px solid #cbd5e1',
+                                borderRadius: '6px',
+                                backgroundColor: '#f8fafc',
+                                maxWidth: '100%'
+                            }}
+                        />
+                        <button type="button" className="signature-clear" disabled>
+                            {__('Clear', 'nexusforms')}
+                        </button>
+                    </div>
+                )}
+
+                {type === 'hidden' && (
+                    <p style={{ fontStyle: 'italic', color: '#64748b' }}>
+                        {__('(Hidden field - not visible on form)', 'nexusforms')}
+                    </p>
+                )}
+
                 {description && <p className="nexusforms-description">{description}</p>}
             </div>
         );

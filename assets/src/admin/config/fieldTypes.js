@@ -77,6 +77,34 @@ export const FIELD_TYPES = [
         category: 'advanced',
         pro: true,
     },
+    {
+        type: 'date',
+        label: 'Date Picker',
+        icon: '📅',
+        description: 'Date selection field',
+        category: 'advanced',
+    },
+    {
+        type: 'rating',
+        label: 'Rating',
+        icon: '⭐',
+        description: 'Star rating field',
+        category: 'advanced',
+    },
+    {
+        type: 'signature',
+        label: 'Signature',
+        icon: '✍️',
+        description: 'Signature drawing pad',
+        category: 'advanced',
+    },
+    {
+        type: 'hidden',
+        label: 'Hidden Field',
+        icon: '👁️',
+        description: 'Hidden value field',
+        category: 'advanced',
+    },
 ];
 
 export const FIELD_CATEGORIES = [
