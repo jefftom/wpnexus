@@ -221,10 +221,39 @@ class NexusForms_Renderer {
              */
             do_action('nexusforms_after_submission', $entry_id, $form_id, $entry_data);
 
-            wp_send_json_success([
-                'message' => __('Form submitted successfully!', 'nexusforms'),
+            // Get form for confirmation settings
+            $forms = new NexusForms_Forms();
+            $form = $forms->get($form_id);
+            $settings = $form->settings ?? (object)[];
+            $confirmation = $settings->confirmation ?? (object)[];
+
+            // Prepare response based on confirmation type
+            $response = [
                 'entry_id' => $entry_id,
-            ]);
+            ];
+
+            $confirmation_type = $confirmation->type ?? 'message';
+
+            switch ($confirmation_type) {
+                case 'redirect':
+                    $response['confirmation_type'] = 'redirect';
+                    $response['redirect_url'] = $confirmation->redirectUrl ?? home_url();
+                    $response['message'] = $confirmation->message ?? __('Form submitted successfully! Redirecting...', 'nexusforms');
+                    break;
+
+                case 'page':
+                    $response['confirmation_type'] = 'page';
+                    $response['page_content'] = $confirmation->pageContent ?? __('Thank you for your submission!', 'nexusforms');
+                    break;
+
+                case 'message':
+                default:
+                    $response['confirmation_type'] = 'message';
+                    $response['message'] = $confirmation->message ?? __('Form submitted successfully!', 'nexusforms');
+                    break;
+            }
+
+            wp_send_json_success($response);
         } else {
             wp_send_json_error([
                 'message' => __('An error occurred while saving your submission.', 'nexusforms'),

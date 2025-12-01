@@ -77,9 +77,32 @@
                     contentType: false,
                 });
 
-                // Success.
-                $message.html(response.data.message).addClass('success').show();
-                $form[0].reset();
+                // Handle different confirmation types
+                const confirmationType = response.data.confirmation_type || 'message';
+
+                switch (confirmationType) {
+                    case 'redirect':
+                        // Show message briefly then redirect
+                        if (response.data.message) {
+                            $message.html(response.data.message).addClass('success').show();
+                        }
+                        setTimeout(() => {
+                            window.location.href = response.data.redirect_url;
+                        }, 1500);
+                        break;
+
+                    case 'page':
+                        // Replace form with page content
+                        $form.html(response.data.page_content);
+                        break;
+
+                    case 'message':
+                    default:
+                        // Show success message
+                        $message.html(response.data.message || 'Form submitted successfully!').addClass('success').show();
+                        $form[0].reset();
+                        break;
+                }
 
                 // Trigger custom event.
                 $(document).trigger('nexusforms:submitted', [formId, response.data]);

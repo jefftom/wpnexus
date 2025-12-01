@@ -16,6 +16,9 @@ import { FieldTemplates } from './FieldTemplates';
 import { ImportExport } from './ImportExport';
 import { EmailBuilder } from './EmailBuilder';
 import { FormPreview } from './FormPreview';
+import { Confirmations } from './Confirmations';
+import { NotificationsManager } from './NotificationsManager';
+import { FormExportImport } from './FormExportImport';
 import { useFormStore } from '../store/formStore';
 import { useForm, useCreateForm, useUpdateForm } from '../hooks/useFormApi';
 
@@ -184,12 +187,20 @@ export const FormBuilder = ({ formId }) => {
                                 title: __('General', 'nexusforms'),
                             },
                             {
-                                name: 'email',
-                                title: __('Email', 'nexusforms'),
+                                name: 'confirmations',
+                                title: __('Confirmations', 'nexusforms'),
+                            },
+                            {
+                                name: 'notifications',
+                                title: __('Notifications', 'nexusforms'),
                             },
                             {
                                 name: 'multi-step',
                                 title: __('Multi-Step', 'nexusforms'),
+                            },
+                            {
+                                name: 'export-import',
+                                title: __('Export/Import', 'nexusforms'),
                             },
                         ]}
                     >
@@ -223,15 +234,27 @@ export const FormBuilder = ({ formId }) => {
                                     </div>
                                 )}
 
-                                {tab.name === 'email' && (
+                                {tab.name === 'confirmations' && (
                                     <div className="modal-content">
-                                        <EmailBuilder />
+                                        <Confirmations />
+                                    </div>
+                                )}
+
+                                {tab.name === 'notifications' && (
+                                    <div className="modal-content">
+                                        <NotificationsManager />
                                     </div>
                                 )}
 
                                 {tab.name === 'multi-step' && (
                                     <div className="modal-content">
                                         <MultiStepManager />
+                                    </div>
+                                )}
+
+                                {tab.name === 'export-import' && formId && (
+                                    <div className="modal-content">
+                                        <FormExportImport formId={formId} />
                                     </div>
                                 )}
 
