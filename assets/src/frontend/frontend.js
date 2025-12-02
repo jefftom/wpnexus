@@ -19,6 +19,7 @@
             this.bindEvents();
             this.initConditionalLogic();
             this.initMultiPageForms();
+            this.initCalculations();
         },
 
         /**
@@ -166,6 +167,9 @@
             // Evaluate conditional logic.
             const $form = $field.closest('.nexusforms-form');
             this.evaluateConditionalLogic($form);
+
+            // Update calculations.
+            this.updateCalculations($form);
         },
 
         /**
@@ -903,6 +907,128 @@
          */
         getI18n(key, fallback) {
             return (window.nexusformsData && window.nexusformsData.i18n && window.nexusformsData.i18n[key]) || fallback;
+        },
+
+        /**
+         * Initialize calculations.
+         */
+        initCalculations() {
+            $('.nexusforms-form').each((index, form) => {
+                const $form = $(form);
+                const $calculations = $form.find('.nexusforms-calculation');
+
+                if ($calculations.length > 0) {
+                    // Calculate initial values
+                    this.updateCalculations($form);
+                }
+            });
+        },
+
+        /**
+         * Update all calculations in a form.
+         *
+         * @param {jQuery} $form Form element.
+         */
+        updateCalculations($form) {
+            const $calculations = $form.find('.nexusforms-calculation');
+
+            $calculations.each((index, element) => {
+                const $calc = $(element);
+                const formula = $calc.data('formula');
+                const format = $calc.data('format');
+                const decimals = $calc.data('decimals');
+                const currency = $calc.data('currency');
+
+                if (!formula) {
+                    return;
+                }
+
+                // Evaluate the formula
+                const result = this.evaluateFormula(formula, $form);
+
+                // Format the result
+                const formatted = this.formatCalculation(result, format, decimals, currency);
+
+                // Update the display
+                $calc.find('.calculation-value').text(formatted);
+            });
+        },
+
+        /**
+         * Evaluate a calculation formula.
+         *
+         * @param {string} formula Formula with {field_id} placeholders.
+         * @param {jQuery} $form Form element.
+         * @return {number} Calculated result.
+         */
+        evaluateFormula(formula, $form) {
+            // Replace {field_id} with actual field values
+            let expression = formula;
+
+            // Find all {field_id} placeholders
+            const fieldRefs = formula.match(/\{([^}]+)\}/g);
+
+            if (fieldRefs) {
+                fieldRefs.forEach(ref => {
+                    const fieldId = ref.replace(/[{}]/g, '');
+                    const $field = $form.find(`[data-field-id="${fieldId}"]`);
+
+                    // Get field value
+                    let value = 0;
+
+                    if ($field.length > 0) {
+                        // If it's a calculation field, get its calculated value
+                        if ($field.hasClass('nexusforms-calculation')) {
+                            const calcValue = $field.find('.calculation-value').text();
+                            value = parseFloat(calcValue.replace(/[^0-9.-]/g, '')) || 0;
+                        } else {
+                            // Get input value
+                            value = parseFloat(this.getFieldValue($field)) || 0;
+                        }
+                    }
+
+                    // Replace placeholder with value
+                    expression = expression.replace(ref, value);
+                });
+            }
+
+            // Evaluate the mathematical expression
+            try {
+                // Use Function constructor for safe evaluation
+                const result = new Function('return ' + expression)();
+                return isNaN(result) ? 0 : result;
+            } catch (e) {
+                console.warn('NexusForms: Invalid calculation formula:', formula, e);
+                return 0;
+            }
+        },
+
+        /**
+         * Format a calculation result.
+         *
+         * @param {number} value Value to format.
+         * @param {string} format Format type (number, currency, percentage).
+         * @param {number} decimals Number of decimal places.
+         * @param {string} currency Currency symbol.
+         * @return {string} Formatted value.
+         */
+        formatCalculation(value, format, decimals, currency) {
+            // Ensure value is a number
+            value = parseFloat(value) || 0;
+
+            // Round to specified decimal places
+            const multiplier = Math.pow(10, decimals);
+            value = Math.round(value * multiplier) / multiplier;
+
+            // Format with decimal places
+            let formatted = value.toFixed(decimals);
+
+            // Add thousands separators
+            const parts = formatted.split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            formatted = parts.join('.');
+
+            return formatted;
         },
     };
 

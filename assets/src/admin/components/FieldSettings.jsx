@@ -244,6 +244,49 @@ export const FieldSettings = () => {
                     </PanelBody>
                 )}
 
+                {selectedField.type === 'calculation' && (
+                    <PanelBody title={__('Calculation Settings', 'nexusforms')} initialOpen={true}>
+                        <TextareaControl
+                            label={__('Formula', 'nexusforms')}
+                            value={selectedField.formula || ''}
+                            onChange={(value) => handleUpdate('formula', value)}
+                            help={__('Use {field_id} to reference other fields. Example: {quantity} * {price}', 'nexusforms')}
+                            placeholder="{quantity} * {price}"
+                            rows={3}
+                        />
+
+                        <SelectControl
+                            label={__('Format', 'nexusforms')}
+                            value={selectedField.calculationFormat || 'number'}
+                            options={[
+                                { label: __('Number', 'nexusforms'), value: 'number' },
+                                { label: __('Currency', 'nexusforms'), value: 'currency' },
+                                { label: __('Percentage', 'nexusforms'), value: 'percentage' },
+                            ]}
+                            onChange={(value) => handleUpdate('calculationFormat', value)}
+                        />
+
+                        {selectedField.calculationFormat === 'currency' && (
+                            <TextControl
+                                label={__('Currency Symbol', 'nexusforms')}
+                                value={selectedField.currencySymbol || '$'}
+                                onChange={(value) => handleUpdate('currencySymbol', value)}
+                                help={__('Symbol to display before the value', 'nexusforms')}
+                            />
+                        )}
+
+                        <TextControl
+                            label={__('Decimal Places', 'nexusforms')}
+                            type="number"
+                            value={selectedField.decimalPlaces ?? '2'}
+                            onChange={(value) => handleUpdate('decimalPlaces', parseInt(value) || 0)}
+                            help={__('Number of decimal places to display', 'nexusforms')}
+                            min="0"
+                            max="10"
+                        />
+                    </PanelBody>
+                )}
+
                 {selectedField.type === 'page' && (
                     <PanelBody title={__('Page Settings', 'nexusforms')} initialOpen={true}>
                         <TextControl

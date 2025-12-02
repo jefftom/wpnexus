@@ -411,6 +411,7 @@ class NexusForms_Renderer {
                 case 'html':
                 case 'section':
                 case 'page':
+                case 'calculation':
                     // These fields don't store data
                     break;
                 default:
@@ -746,6 +747,35 @@ class NexusForms_Renderer {
                     $html .= '<p class="section-description">' . esc_html($section_desc) . '</p>';
                 }
                 $html .= '<hr class="section-divider">';
+                $html .= '</div>';
+                return $html;
+
+            case 'calculation':
+                // Calculation field - read-only, computed by JavaScript
+                $formula = $field['formula'] ?? '';
+                $format = $field['calculationFormat'] ?? 'number';
+                $decimal_places = $field['decimalPlaces'] ?? 2;
+                $currency_symbol = $field['currencySymbol'] ?? '$';
+
+                $html = sprintf(
+                    '<div class="nexusforms-calculation" data-field-id="%s" data-formula="%s" data-format="%s" data-decimals="%d" data-currency="%s">',
+                    esc_attr($id),
+                    esc_attr($formula),
+                    esc_attr($format),
+                    (int) $decimal_places,
+                    esc_attr($currency_symbol)
+                );
+
+                if ($format === 'currency') {
+                    $html .= '<span class="calculation-currency">' . esc_html($currency_symbol) . '</span>';
+                }
+
+                $html .= '<span class="calculation-value">0.00</span>';
+
+                if ($format === 'percentage') {
+                    $html .= '<span class="calculation-percent">%</span>';
+                }
+
                 $html .= '</div>';
                 return $html;
 

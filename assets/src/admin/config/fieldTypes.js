@@ -148,6 +148,13 @@ export const FIELD_TYPES = [
         category: 'advanced',
     },
     {
+        type: 'calculation',
+        label: 'Calculation',
+        icon: '🧮',
+        description: 'Calculated field with formula',
+        category: 'advanced',
+    },
+    {
         type: 'html',
         label: 'HTML Content',
         icon: '📰',

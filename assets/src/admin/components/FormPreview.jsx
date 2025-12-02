@@ -252,6 +252,28 @@ export const FormPreview = ({ formId, buttonText, buttonVariant = 'secondary' })
                     </div>
                 )}
 
+                {type === 'calculation' && (
+                    <div style={{
+                        padding: '0.75rem 1rem',
+                        background: '#f0fdf4',
+                        border: '1px solid #86efac',
+                        borderRadius: '6px',
+                        fontFamily: 'monospace',
+                        fontSize: '1.125rem',
+                        fontWeight: 600,
+                        color: '#15803d',
+                    }}>
+                        {fieldData.calculationFormat === 'currency' && (fieldData.currencySymbol || '$')}
+                        0.00
+                        {fieldData.calculationFormat === 'percentage' && '%'}
+                        {fieldData.formula && (
+                            <div style={{ fontSize: '0.75rem', marginTop: '0.5rem', color: '#6b7280', fontWeight: 'normal' }}>
+                                {__('Formula:', 'nexusforms')} {fieldData.formula}
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 {type === 'section' && (
                     <div className="nexusforms-section-break">
                         {fieldData.sectionTitle && (
