@@ -274,13 +274,33 @@ class NexusForms_Submissions {
         $forms = new NexusForms_Forms();
         $form = $forms->get($form_id);
 
-        // Build CSV header.
+        // Build CSV header with composite field support.
         $headers = ['Entry ID', 'Date'];
-        $field_keys = [];
+        $field_mapping = []; // Track field structure for data extraction
 
         foreach ($form->fields as $field) {
-            $headers[] = $field->field_data['label'] ?? $field->field_data['id'];
-            $field_keys[] = $field->field_data['id'];
+            $field_data = $field->field_data;
+            $field_id = $field_data['id'];
+            $field_type = $field_data['type'] ?? 'text';
+            $label = $field_data['label'] ?? $field_id;
+
+            // Handle composite fields with multiple columns
+            if ($field_type === 'name') {
+                $headers[] = $label . ' (First)';
+                $headers[] = $label . ' (Last)';
+                $field_mapping[] = ['id' => $field_id, 'type' => 'name'];
+            } elseif ($field_type === 'address') {
+                $headers[] = $label . ' (Street)';
+                $headers[] = $label . ' (Street 2)';
+                $headers[] = $label . ' (City)';
+                $headers[] = $label . ' (State)';
+                $headers[] = $label . ' (ZIP)';
+                $headers[] = $label . ' (Country)';
+                $field_mapping[] = ['id' => $field_id, 'type' => 'address'];
+            } else {
+                $headers[] = $label;
+                $field_mapping[] = ['id' => $field_id, 'type' => $field_type];
+            }
         }
 
         $headers[] = 'IP Address';
@@ -293,9 +313,28 @@ class NexusForms_Submissions {
         foreach ($entries as $entry) {
             $row = [$entry->id, $entry->created_at];
 
-            foreach ($field_keys as $key) {
-                $value = $entry->entry_data[$key] ?? '';
-                $row[] = is_array($value) ? implode(', ', $value) : $value;
+            foreach ($field_mapping as $field_info) {
+                $field_id = $field_info['id'];
+                $field_type = $field_info['type'];
+                $value = $entry->entry_data[$field_id] ?? '';
+
+                // Handle different field types
+                if ($field_type === 'name' && is_array($value)) {
+                    $row[] = $value['first'] ?? '';
+                    $row[] = $value['last'] ?? '';
+                } elseif ($field_type === 'address' && is_array($value)) {
+                    $row[] = $value['street'] ?? '';
+                    $row[] = $value['street2'] ?? '';
+                    $row[] = $value['city'] ?? '';
+                    $row[] = $value['state'] ?? '';
+                    $row[] = $value['zip'] ?? '';
+                    $row[] = $value['country'] ?? '';
+                } elseif (is_array($value)) {
+                    // Multi-value fields (checkbox, multi-select, list)
+                    $row[] = $this->flatten_array_value($value);
+                } else {
+                    $row[] = $value;
+                }
             }
 
             $row[] = $entry->ip_address;
@@ -354,5 +393,36 @@ class NexusForms_Submissions {
      */
     private function get_user_agent(): ?string {
         return $_SERVER['HTTP_USER_AGENT'] ?? null;
+    }
+
+    /**
+     * Flatten array value for CSV export.
+     *
+     * Handles multi-dimensional arrays (like list fields) and simple arrays.
+     *
+     * @since 1.0.0
+     * @param mixed $value Value to flatten.
+     * @return string Flattened string.
+     */
+    private function flatten_array_value($value): string {
+        if (!is_array($value)) {
+            return (string) $value;
+        }
+
+        // Handle list field (array of arrays)
+        if (is_array(reset($value))) {
+            $rows = [];
+            foreach ($value as $row) {
+                if (is_array($row)) {
+                    $rows[] = implode(' | ', array_map('strval', $row));
+                } else {
+                    $rows[] = (string) $row;
+                }
+            }
+            return implode('; ', $rows);
+        }
+
+        // Handle simple array (checkbox, multi-select)
+        return implode(', ', array_map('strval', $value));
     }
 }

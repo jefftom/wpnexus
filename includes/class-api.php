@@ -141,6 +141,13 @@ class NexusForms_API {
             'callback' => [$this, 'export_entries'],
             'permission_callback' => [$this, 'check_permission'],
         ]);
+
+        // Export entries (with form_id parameter).
+        register_rest_route(self::NAMESPACE, '/entries/export', [
+            'methods' => 'GET',
+            'callback' => [$this, 'export_entries_csv'],
+            'permission_callback' => [$this, 'check_permission'],
+        ]);
     }
 
     /**
@@ -564,6 +571,48 @@ class NexusForms_API {
         return new WP_REST_Response([
             'csv' => $csv,
         ], 200);
+    }
+
+    /**
+     * Export entries to CSV file download.
+     *
+     * @since 1.0.0
+     * @param WP_REST_Request $request Request object.
+     * @return WP_REST_Response|WP_Error
+     */
+    public function export_entries_csv(WP_REST_Request $request) {
+        $form_id = (int) $request->get_param('form_id');
+
+        if (empty($form_id)) {
+            return new WP_Error('no_form_id', __('Form ID is required.', 'nexusforms'), ['status' => 400]);
+        }
+
+        $submissions = new NexusForms_Submissions();
+        $csv = $submissions->export_to_csv($form_id);
+
+        if (empty($csv)) {
+            return new WP_Error('no_entries', __('No entries to export.', 'nexusforms'), ['status' => 404]);
+        }
+
+        // Get form title for filename
+        $forms = new NexusForms_Forms();
+        $form = $forms->get($form_id);
+        $form_title = $form ? sanitize_file_name($form->title) : 'form-' . $form_id;
+        $filename = $form_title . '-entries-' . date('Y-m-d') . '.csv';
+
+        // Add UTF-8 BOM for Excel compatibility
+        $csv_with_bom = "\xEF\xBB\xBF" . $csv;
+
+        // Return response with CSV headers
+        $response = new WP_REST_Response($csv_with_bom, 200);
+        $response->header('Content-Type', 'text/csv; charset=utf-8');
+        $response->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+        $response->header('Content-Length', strlen($csv_with_bom));
+        $response->header('Cache-Control', 'no-cache, no-store, must-revalidate');
+        $response->header('Pragma', 'no-cache');
+        $response->header('Expires', '0');
+
+        return $response;
     }
 
     /**
