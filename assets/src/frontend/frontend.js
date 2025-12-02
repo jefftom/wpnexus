@@ -17,6 +17,7 @@
          */
         init() {
             this.bindEvents();
+            this.initConditionalLogic();
         },
 
         /**
@@ -156,6 +157,10 @@
 
             // Client-side validation.
             this.validateField($field);
+
+            // Evaluate conditional logic.
+            const $form = $field.closest('.nexusforms-form');
+            this.evaluateConditionalLogic($form);
         },
 
         /**
@@ -417,6 +422,200 @@
                     });
                 });
             }
+        },
+
+        /**
+         * Initialize conditional logic.
+         */
+        initConditionalLogic() {
+            $('.nexusforms-form').each((index, form) => {
+                const $form = $(form);
+                // Store form schema in data attribute if not already there
+                if (!$form.data('schema-loaded')) {
+                    $form.data('schema-loaded', true);
+                    // Evaluate conditional logic on page load
+                    this.evaluateConditionalLogic($form);
+                }
+            });
+        },
+
+        /**
+         * Evaluate conditional logic for all fields in a form.
+         *
+         * @param {jQuery} $form Form element.
+         */
+        evaluateConditionalLogic($form) {
+            // Get form schema from data attribute or window object
+            const formId = $form.data('form-id');
+            const formSchema = window[`nexusforms_schema_${formId}`] || {};
+            const fields = formSchema.fields || [];
+
+            // Evaluate each field's conditional logic
+            fields.forEach(field => {
+                if (field.conditionalLogic && field.conditionalLogic.enabled) {
+                    const shouldShow = this.evaluateRules(field.conditionalLogic, $form);
+                    const $fieldWrapper = $form.find(`[data-field-id="${field.id}"]`).closest('.nexusforms-field');
+
+                    if (shouldShow) {
+                        this.showField($fieldWrapper);
+                    } else {
+                        this.hideField($fieldWrapper);
+                    }
+                }
+            });
+        },
+
+        /**
+         * Evaluate conditional logic rules.
+         *
+         * @param {Object} conditionalLogic Conditional logic configuration.
+         * @param {jQuery} $form Form element.
+         * @return {boolean} Should field be shown.
+         */
+        evaluateRules(conditionalLogic, $form) {
+            const { action, logic, rules } = conditionalLogic;
+
+            // Evaluate all rules
+            const results = rules.map(rule => this.evaluateRule(rule, $form));
+
+            // Determine if conditions are met
+            let conditionsMet;
+            if (logic === 'all') {
+                conditionsMet = results.every(result => result === true);
+            } else { // 'any'
+                conditionsMet = results.some(result => result === true);
+            }
+
+            // Return based on action type
+            if (action === 'show') {
+                return conditionsMet;
+            } else { // 'hide'
+                return !conditionsMet;
+            }
+        },
+
+        /**
+         * Evaluate a single conditional logic rule.
+         *
+         * @param {Object} rule Rule to evaluate.
+         * @param {jQuery} $form Form element.
+         * @return {boolean} Does rule match.
+         */
+        evaluateRule(rule, $form) {
+            const { field: fieldId, operator, value } = rule;
+
+            // Get field value
+            const $field = $form.find(`[data-field-id="${fieldId}"]`);
+            if ($field.length === 0) {
+                return false;
+            }
+
+            let fieldValue = this.getFieldValue($field);
+
+            // Evaluate based on operator
+            switch (operator) {
+                case 'is':
+                    return fieldValue === value;
+
+                case 'is_not':
+                    return fieldValue !== value;
+
+                case 'contains':
+                    return String(fieldValue).includes(value);
+
+                case 'starts_with':
+                    return String(fieldValue).startsWith(value);
+
+                case 'ends_with':
+                    return String(fieldValue).endsWith(value);
+
+                case 'greater_than':
+                    return parseFloat(fieldValue) > parseFloat(value);
+
+                case 'less_than':
+                    return parseFloat(fieldValue) < parseFloat(value);
+
+                case 'is_empty':
+                case 'empty':
+                    return !fieldValue || fieldValue.length === 0;
+
+                case 'is_not_empty':
+                case 'not_empty':
+                    return fieldValue && fieldValue.length > 0;
+
+                default:
+                    return false;
+            }
+        },
+
+        /**
+         * Get field value based on field type.
+         *
+         * @param {jQuery} $field Field element.
+         * @return {string|Array} Field value.
+         */
+        getFieldValue($field) {
+            const fieldType = $field.attr('type') || $field.prop('tagName').toLowerCase();
+
+            // Checkbox
+            if (fieldType === 'checkbox') {
+                if ($field.is('[name$="[]"]')) {
+                    // Multiple checkboxes
+                    const name = $field.attr('name');
+                    const $checkboxes = $(`[name="${name}"]`);
+                    const values = [];
+                    $checkboxes.filter(':checked').each(function() {
+                        values.push($(this).val());
+                    });
+                    return values;
+                } else {
+                    // Single checkbox
+                    return $field.is(':checked') ? $field.val() : '';
+                }
+            }
+
+            // Radio
+            if (fieldType === 'radio') {
+                const name = $field.attr('name');
+                const $checked = $(`[name="${name}"]:checked`);
+                return $checked.length > 0 ? $checked.val() : '';
+            }
+
+            // Select (including multi-select)
+            if (fieldType === 'select') {
+                if ($field.prop('multiple')) {
+                    return $field.val() || [];
+                }
+                return $field.val() || '';
+            }
+
+            // Default (text, textarea, etc.)
+            return $field.val() || '';
+        },
+
+        /**
+         * Show a field with animation.
+         *
+         * @param {jQuery} $fieldWrapper Field wrapper element.
+         */
+        showField($fieldWrapper) {
+            if ($fieldWrapper.length === 0) return;
+
+            $fieldWrapper.removeClass('nexusforms-field-hidden').addClass('nexusforms-field-visible');
+            $fieldWrapper.find('.nexusforms-input').prop('disabled', false);
+        },
+
+        /**
+         * Hide a field with animation.
+         *
+         * @param {jQuery} $fieldWrapper Field wrapper element.
+         */
+        hideField($fieldWrapper) {
+            if ($fieldWrapper.length === 0) return;
+
+            $fieldWrapper.removeClass('nexusforms-field-visible').addClass('nexusforms-field-hidden');
+            // Disable hidden fields so they don't get submitted
+            $fieldWrapper.find('.nexusforms-input').prop('disabled', true);
         },
     };
 

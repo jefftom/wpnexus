@@ -149,6 +149,10 @@ class NexusForms_Renderer {
             true
         );
 
+        // Get form schema for conditional logic.
+        $forms = new NexusForms_Forms();
+        $form = $forms->get($form_id);
+
         // Localize script.
         wp_localize_script('nexusforms-frontend', 'nexusformsData', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
@@ -163,6 +167,18 @@ class NexusForms_Renderer {
                 'invalidEmail' => __('Please enter a valid email address.', 'nexusforms'),
             ],
         ]);
+
+        // Expose form schema for conditional logic (as separate variable to avoid conflicts).
+        if ($form) {
+            wp_add_inline_script(
+                'nexusforms-frontend',
+                'window.nexusforms_schema_' . $form_id . ' = ' . wp_json_encode([
+                    'fields' => json_decode($form->fields ?? '[]', true),
+                    'settings' => json_decode($form->settings ?? '{}', true),
+                ]) . ';',
+                'before'
+            );
+        }
     }
 
     /**

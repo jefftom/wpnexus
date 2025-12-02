@@ -43,6 +43,11 @@ class NexusForms_Validator {
             $field_id = $field_data['id'];
             $value = $data[$field_id] ?? '';
 
+            // Skip validation if field is hidden by conditional logic.
+            if ($this->is_field_hidden_by_conditional_logic($field_data, $data, $form->fields)) {
+                continue;
+            }
+
             // Required validation.
             if (!empty($field_data['required']) && empty($value)) {
                 $errors[$field_id] = sprintf(
@@ -289,6 +294,99 @@ class NexusForms_Validator {
 
             default:
                 return sanitize_text_field($value);
+        }
+    }
+
+    /**
+     * Check if field is hidden by conditional logic.
+     *
+     * @since 1.0.0
+     * @param array $field_data Field data.
+     * @param array $submitted_data All submitted form data.
+     * @param array $all_fields All form fields.
+     * @return bool True if field is hidden, false otherwise.
+     */
+    private function is_field_hidden_by_conditional_logic(array $field_data, array $submitted_data, array $all_fields): bool {
+        // Check if field has conditional logic enabled.
+        if (empty($field_data['conditionalLogic']) || empty($field_data['conditionalLogic']['enabled'])) {
+            return false;
+        }
+
+        $conditional_logic = $field_data['conditionalLogic'];
+        $action = $conditional_logic['action'] ?? 'show';
+        $logic = $conditional_logic['logic'] ?? 'all';
+        $rules = $conditional_logic['rules'] ?? [];
+
+        if (empty($rules)) {
+            return false;
+        }
+
+        // Evaluate all rules.
+        $results = array_map(function($rule) use ($submitted_data, $all_fields) {
+            return $this->evaluate_conditional_rule($rule, $submitted_data, $all_fields);
+        }, $rules);
+
+        // Determine if conditions are met.
+        $conditions_met = $logic === 'all'
+            ? !in_array(false, $results, true)
+            : in_array(true, $results, true);
+
+        // Determine if field should be shown or hidden.
+        $should_show = ($action === 'show' && $conditions_met) || ($action === 'hide' && !$conditions_met);
+
+        return !$should_show; // Return true if field is hidden.
+    }
+
+    /**
+     * Evaluate a single conditional logic rule.
+     *
+     * @since 1.0.0
+     * @param array $rule Conditional logic rule.
+     * @param array $submitted_data All submitted form data.
+     * @param array $all_fields All form fields.
+     * @return bool True if rule matches, false otherwise.
+     */
+    private function evaluate_conditional_rule(array $rule, array $submitted_data, array $all_fields): bool {
+        $field_id = $rule['field'] ?? '';
+        $operator = $rule['operator'] ?? 'is';
+        $expected_value = $rule['value'] ?? '';
+
+        // Get the actual value from submitted data.
+        $actual_value = $submitted_data[$field_id] ?? '';
+
+        // Evaluate based on operator.
+        switch ($operator) {
+            case 'is':
+                return $actual_value == $expected_value;
+
+            case 'is_not':
+                return $actual_value != $expected_value;
+
+            case 'contains':
+                return is_string($actual_value) && strpos($actual_value, $expected_value) !== false;
+
+            case 'starts_with':
+                return is_string($actual_value) && strpos($actual_value, $expected_value) === 0;
+
+            case 'ends_with':
+                return is_string($actual_value) && substr($actual_value, -strlen($expected_value)) === $expected_value;
+
+            case 'greater_than':
+                return is_numeric($actual_value) && floatval($actual_value) > floatval($expected_value);
+
+            case 'less_than':
+                return is_numeric($actual_value) && floatval($actual_value) < floatval($expected_value);
+
+            case 'is_empty':
+            case 'empty':
+                return empty($actual_value);
+
+            case 'is_not_empty':
+            case 'not_empty':
+                return !empty($actual_value);
+
+            default:
+                return false;
         }
     }
 }

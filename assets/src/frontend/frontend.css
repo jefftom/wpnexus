@@ -523,3 +523,22 @@
         grid-column: 1;
     }
 }
+
+/* Conditional Logic - Show/Hide Transitions */
+.nexusforms-field {
+    transition: opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease, padding 0.3s ease;
+    overflow: hidden;
+}
+
+.nexusforms-field-visible {
+    opacity: 1;
+    max-height: 5000px;
+}
+
+.nexusforms-field-hidden {
+    opacity: 0;
+    max-height: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+    pointer-events: none;
+}
