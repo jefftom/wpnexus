@@ -105,10 +105,67 @@ export const FIELD_TYPES = [
         description: 'Hidden value field',
         category: 'advanced',
     },
+    {
+        type: 'time',
+        label: 'Time Picker',
+        icon: '🕐',
+        description: 'Time selection field',
+        category: 'advanced',
+    },
+    {
+        type: 'name',
+        label: 'Name',
+        icon: '👤',
+        description: 'First and last name fields',
+        category: 'advanced',
+    },
+    {
+        type: 'address',
+        label: 'Address',
+        icon: '🏠',
+        description: 'Full address with multiple fields',
+        category: 'advanced',
+    },
+    {
+        type: 'multiselect',
+        label: 'Multi-Select',
+        icon: '☰',
+        description: 'Select multiple options',
+        category: 'choice',
+    },
+    {
+        type: 'consent',
+        label: 'Consent',
+        icon: '✓',
+        description: 'Agreement checkbox with text',
+        category: 'advanced',
+    },
+    {
+        type: 'list',
+        label: 'List',
+        icon: '📋',
+        description: 'Repeatable list of items',
+        category: 'advanced',
+    },
+    {
+        type: 'html',
+        label: 'HTML Content',
+        icon: '📰',
+        description: 'Display HTML content',
+        category: 'layout',
+    },
+    {
+        type: 'section',
+        label: 'Section Break',
+        icon: '➖',
+        description: 'Visual section divider',
+        category: 'layout',
+    },
 ];
 
 export const FIELD_CATEGORIES = [
     { id: 'basic', label: 'Basic Fields' },
     { id: 'choice', label: 'Choice Fields' },
     { id: 'advanced', label: 'Advanced Fields' },
+    { id: 'layout', label: 'Layout Fields' },
 ];

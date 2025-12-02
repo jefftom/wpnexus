@@ -357,6 +357,45 @@ class NexusForms_Renderer {
                 case 'hidden':
                     $entry_data[$field_id] = sanitize_text_field($value);
                     break;
+                case 'time':
+                    $entry_data[$field_id] = sanitize_text_field($value);
+                    break;
+                case 'name':
+                    // Name field has first and last name subfields
+                    $entry_data[$field_id] = [
+                        'first' => sanitize_text_field($value['first'] ?? ''),
+                        'last' => sanitize_text_field($value['last'] ?? ''),
+                    ];
+                    break;
+                case 'address':
+                    // Address field has multiple subfields
+                    $entry_data[$field_id] = [
+                        'street' => sanitize_text_field($value['street'] ?? ''),
+                        'street2' => sanitize_text_field($value['street2'] ?? ''),
+                        'city' => sanitize_text_field($value['city'] ?? ''),
+                        'state' => sanitize_text_field($value['state'] ?? ''),
+                        'zip' => sanitize_text_field($value['zip'] ?? ''),
+                        'country' => sanitize_text_field($value['country'] ?? ''),
+                    ];
+                    break;
+                case 'multiselect':
+                    $entry_data[$field_id] = is_array($value)
+                        ? array_map('sanitize_text_field', $value)
+                        : sanitize_text_field($value);
+                    break;
+                case 'consent':
+                    $entry_data[$field_id] = $value ? 'yes' : 'no';
+                    break;
+                case 'list':
+                    // List field is an array of rows
+                    $entry_data[$field_id] = is_array($value)
+                        ? array_map('sanitize_text_field', $value)
+                        : [];
+                    break;
+                case 'html':
+                case 'section':
+                    // These fields don't store data
+                    break;
                 default:
                     $entry_data[$field_id] = sanitize_text_field($value);
             }
@@ -556,6 +595,142 @@ class NexusForms_Renderer {
                     esc_attr($id),
                     esc_attr($default_value)
                 );
+
+            case 'time':
+                return sprintf(
+                    '<input type="time" %s class="nexusforms-input nexusforms-time">',
+                    $attrs
+                );
+
+            case 'name':
+                $html = '<div class="nexusforms-name-wrapper">';
+                $html .= sprintf(
+                    '<div class="name-field"><input type="text" name="%s[first]" id="%s-first" placeholder="%s" class="nexusforms-input" %s></div>',
+                    esc_attr($name),
+                    esc_attr($id),
+                    esc_attr__('First Name', 'nexusforms'),
+                    $required ? 'required' : ''
+                );
+                $html .= sprintf(
+                    '<div class="name-field"><input type="text" name="%s[last]" id="%s-last" placeholder="%s" class="nexusforms-input" %s></div>',
+                    esc_attr($name),
+                    esc_attr($id),
+                    esc_attr__('Last Name', 'nexusforms'),
+                    $required ? 'required' : ''
+                );
+                $html .= '</div>';
+                return $html;
+
+            case 'address':
+                $html = '<div class="nexusforms-address-wrapper">';
+                $html .= sprintf(
+                    '<div class="address-field full"><input type="text" name="%s[street]" id="%s-street" placeholder="%s" class="nexusforms-input" %s></div>',
+                    esc_attr($name),
+                    esc_attr($id),
+                    esc_attr__('Street Address', 'nexusforms'),
+                    $required ? 'required' : ''
+                );
+                $html .= sprintf(
+                    '<div class="address-field full"><input type="text" name="%s[street2]" id="%s-street2" placeholder="%s" class="nexusforms-input"></div>',
+                    esc_attr($name),
+                    esc_attr($id),
+                    esc_attr__('Address Line 2', 'nexusforms')
+                );
+                $html .= sprintf(
+                    '<div class="address-field"><input type="text" name="%s[city]" id="%s-city" placeholder="%s" class="nexusforms-input" %s></div>',
+                    esc_attr($name),
+                    esc_attr($id),
+                    esc_attr__('City', 'nexusforms'),
+                    $required ? 'required' : ''
+                );
+                $html .= sprintf(
+                    '<div class="address-field"><input type="text" name="%s[state]" id="%s-state" placeholder="%s" class="nexusforms-input" %s></div>',
+                    esc_attr($name),
+                    esc_attr($id),
+                    esc_attr__('State/Province', 'nexusforms'),
+                    $required ? 'required' : ''
+                );
+                $html .= sprintf(
+                    '<div class="address-field"><input type="text" name="%s[zip]" id="%s-zip" placeholder="%s" class="nexusforms-input" %s></div>',
+                    esc_attr($name),
+                    esc_attr($id),
+                    esc_attr__('ZIP/Postal Code', 'nexusforms'),
+                    $required ? 'required' : ''
+                );
+                $html .= sprintf(
+                    '<div class="address-field"><input type="text" name="%s[country]" id="%s-country" placeholder="%s" class="nexusforms-input"></div>',
+                    esc_attr($name),
+                    esc_attr($id),
+                    esc_attr__('Country', 'nexusforms')
+                );
+                $html .= '</div>';
+                return $html;
+
+            case 'multiselect':
+                $options = $field['options'] ?? [];
+                $html = sprintf('<select %s class="nexusforms-input nexusforms-multiselect" multiple size="5" name="%s[]">', $attrs, esc_attr($name));
+                foreach ($options as $option) {
+                    $html .= sprintf(
+                        '<option value="%s">%s</option>',
+                        esc_attr($option['value']),
+                        esc_html($option['label'])
+                    );
+                }
+                $html .= '</select>';
+                return $html;
+
+            case 'consent':
+                $consent_text = $field['consentText'] ?? __('I agree to the terms and conditions', 'nexusforms');
+                return sprintf(
+                    '<label class="nexusforms-consent"><input type="checkbox" name="%s" id="%s" value="1" %s> <span class="consent-text">%s</span></label>',
+                    esc_attr($name),
+                    esc_attr($id),
+                    $required ? 'required' : '',
+                    wp_kses_post($consent_text)
+                );
+
+            case 'list':
+                $columns = $field['columns'] ?? [__('Item', 'nexusforms')];
+                $html = '<div class="nexusforms-list-wrapper" data-field-id="' . esc_attr($id) . '">';
+                $html .= '<div class="list-header">';
+                foreach ($columns as $index => $column) {
+                    $html .= sprintf('<div class="list-column-header">%s</div>', esc_html($column));
+                }
+                $html .= '<div class="list-column-header list-actions"></div>';
+                $html .= '</div>';
+                $html .= '<div class="list-rows">';
+                $html .= '<div class="list-row">';
+                foreach ($columns as $index => $column) {
+                    $html .= sprintf(
+                        '<div class="list-column"><input type="text" name="%s[0][%d]" class="nexusforms-input"></div>',
+                        esc_attr($name),
+                        $index
+                    );
+                }
+                $html .= '<div class="list-column list-actions"><button type="button" class="list-remove" aria-label="' . esc_attr__('Remove', 'nexusforms') . '">×</button></div>';
+                $html .= '</div>';
+                $html .= '</div>';
+                $html .= '<button type="button" class="list-add-row">' . esc_html__('+ Add Row', 'nexusforms') . '</button>';
+                $html .= '</div>';
+                return $html;
+
+            case 'html':
+                $content = $field['htmlContent'] ?? '';
+                return '<div class="nexusforms-html-content">' . wp_kses_post($content) . '</div>';
+
+            case 'section':
+                $section_title = $field['sectionTitle'] ?? '';
+                $section_desc = $field['sectionDescription'] ?? '';
+                $html = '<div class="nexusforms-section-break">';
+                if ($section_title) {
+                    $html .= '<h3 class="section-title">' . esc_html($section_title) . '</h3>';
+                }
+                if ($section_desc) {
+                    $html .= '<p class="section-description">' . esc_html($section_desc) . '</p>';
+                }
+                $html .= '<hr class="section-divider">';
+                $html .= '</div>';
+                return $html;
 
             default:
                 return sprintf(

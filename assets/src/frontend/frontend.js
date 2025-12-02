@@ -34,6 +34,10 @@
             // Signature field events
             this.initSignatureFields();
             $(document).on('click', '.signature-clear', this.handleSignatureClear.bind(this));
+
+            // List field events
+            $(document).on('click', '.list-add-row', this.handleListAddRow.bind(this));
+            $(document).on('click', '.list-remove', this.handleListRemoveRow.bind(this));
         },
 
         /**
@@ -355,6 +359,63 @@
                 // Clear hidden input
                 const $input = $(canvas).siblings('input[type="hidden"]');
                 $input.val('');
+            }
+        },
+
+        /**
+         * Handle list add row.
+         *
+         * @param {Event} e Click event.
+         */
+        handleListAddRow(e) {
+            e.preventDefault();
+            const $button = $(e.target);
+            const $wrapper = $button.closest('.nexusforms-list-wrapper');
+            const $rows = $wrapper.find('.list-rows');
+            const $firstRow = $rows.find('.list-row').first();
+            const fieldId = $wrapper.data('field-id');
+            const rowIndex = $rows.find('.list-row').length;
+
+            // Clone the first row
+            const $newRow = $firstRow.clone();
+
+            // Clear input values
+            $newRow.find('input').val('').each(function(index) {
+                const $input = $(this);
+                const name = $input.attr('name');
+                // Update the row index in the name attribute
+                const newName = name.replace(/\[\d+\]/, '[' + rowIndex + ']');
+                $input.attr('name', newName);
+            });
+
+            // Add the new row
+            $rows.append($newRow);
+        },
+
+        /**
+         * Handle list remove row.
+         *
+         * @param {Event} e Click event.
+         */
+        handleListRemoveRow(e) {
+            e.preventDefault();
+            const $button = $(e.target);
+            const $wrapper = $button.closest('.nexusforms-list-wrapper');
+            const $rows = $wrapper.find('.list-rows');
+
+            // Don't remove if it's the only row
+            if ($rows.find('.list-row').length > 1) {
+                $button.closest('.list-row').remove();
+
+                // Reindex remaining rows
+                $rows.find('.list-row').each(function(rowIndex) {
+                    $(this).find('input').each(function() {
+                        const $input = $(this);
+                        const name = $input.attr('name');
+                        const newName = name.replace(/\[\d+\]/, '[' + rowIndex + ']');
+                        $input.attr('name', newName);
+                    });
+                });
             }
         },
     };

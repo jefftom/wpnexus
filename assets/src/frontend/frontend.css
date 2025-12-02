@@ -342,3 +342,184 @@
         height: 150px;
     }
 }
+
+/* ==========================================================================
+   Additional Field Types (Tier 1 + 2)
+   ========================================================================== */
+
+/* Time picker */
+.nexusforms-time {
+    max-width: 200px;
+}
+
+/* Name field */
+.nexusforms-name-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* Address field */
+.nexusforms-address-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+}
+
+.nexusforms-address-wrapper .address-field.full {
+    grid-column: 1 / -1;
+}
+
+/* Multi-select */
+.nexusforms-multiselect {
+    min-height: 120px;
+}
+
+/* Consent field */
+.nexusforms-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+    cursor: pointer;
+}
+
+.nexusforms-consent input[type="checkbox"] {
+    margin-top: 0.25rem;
+    flex-shrink: 0;
+}
+
+.nexusforms-consent .consent-text {
+    line-height: 1.6;
+}
+
+/* List/Repeater field */
+.nexusforms-list-wrapper {
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 1rem;
+    background: #f8fafc;
+}
+
+.list-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #475569;
+}
+
+.list-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.list-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.list-column input {
+    width: 100%;
+}
+
+.list-column.list-actions {
+    width: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.list-remove {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    color: #dc2626;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.list-remove:hover {
+    background: #fee2e2;
+    border-color: #dc2626;
+}
+
+.list-add-row {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #3b82f6;
+    background: #fff;
+    border: 1px solid #3b82f6;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.list-add-row:hover {
+    background: #3b82f6;
+    color: #fff;
+}
+
+/* HTML content field */
+.nexusforms-html-content {
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 6px;
+    line-height: 1.6;
+}
+
+.nexusforms-html-content h1,
+.nexusforms-html-content h2,
+.nexusforms-html-content h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+.nexusforms-html-content p {
+    margin: 0.5rem 0;
+}
+
+/* Section break */
+.nexusforms-section-break {
+    margin: 2rem 0;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 0.5rem 0;
+}
+
+.section-description {
+    color: #64748b;
+    margin: 0 0 1rem 0;
+}
+
+.section-divider {
+    border: none;
+    border-top: 2px solid #cbd5e1;
+    margin: 0;
+}
+
+/* Responsive adjustments for new fields */
+@media (max-width: 640px) {
+    .nexusforms-name-wrapper,
+    .nexusforms-address-wrapper {
+        grid-template-columns: 1fr;
+    }
+
+    .nexusforms-address-wrapper .address-field.full {
+        grid-column: 1;
+    }
+}

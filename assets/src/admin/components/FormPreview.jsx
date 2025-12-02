@@ -176,6 +176,94 @@ export const FormPreview = ({ formId, buttonText, buttonVariant = 'secondary' })
                     </p>
                 )}
 
+                {type === 'time' && (
+                    <input
+                        type="time"
+                        className="nexusforms-input nexusforms-time"
+                        disabled
+                    />
+                )}
+
+                {type === 'name' && (
+                    <div className="nexusforms-name-wrapper">
+                        <input type="text" className="nexusforms-input" placeholder={__('First Name', 'nexusforms')} disabled />
+                        <input type="text" className="nexusforms-input" placeholder={__('Last Name', 'nexusforms')} disabled />
+                    </div>
+                )}
+
+                {type === 'address' && (
+                    <div className="nexusforms-address-wrapper">
+                        <div style={{ gridColumn: '1 / -1' }}>
+                            <input type="text" className="nexusforms-input" placeholder={__('Street Address', 'nexusforms')} disabled />
+                        </div>
+                        <div style={{ gridColumn: '1 / -1' }}>
+                            <input type="text" className="nexusforms-input" placeholder={__('Address Line 2', 'nexusforms')} disabled />
+                        </div>
+                        <input type="text" className="nexusforms-input" placeholder={__('City', 'nexusforms')} disabled />
+                        <input type="text" className="nexusforms-input" placeholder={__('State/Province', 'nexusforms')} disabled />
+                        <input type="text" className="nexusforms-input" placeholder={__('ZIP/Postal Code', 'nexusforms')} disabled />
+                        <input type="text" className="nexusforms-input" placeholder={__('Country', 'nexusforms')} disabled />
+                    </div>
+                )}
+
+                {type === 'multiselect' && (
+                    <select className="nexusforms-input nexusforms-multiselect" multiple size="5" disabled>
+                        {(options || []).map((option, index) => (
+                            <option key={index} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
+                )}
+
+                {type === 'consent' && (
+                    <label className="nexusforms-consent">
+                        <input type="checkbox" disabled />
+                        <span className="consent-text">
+                            {fieldData.consentText || __('I agree to the terms and conditions', 'nexusforms')}
+                        </span>
+                    </label>
+                )}
+
+                {type === 'list' && (
+                    <div className="nexusforms-list-wrapper">
+                        <div style={{ marginBottom: '0.5rem', fontWeight: 600 }}>
+                            {__('List Items', 'nexusforms')}
+                        </div>
+                        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                            <input type="text" className="nexusforms-input" placeholder={__('Item 1', 'nexusforms')} disabled />
+                            <button type="button" disabled style={{ width: '32px', height: '32px' }}>×</button>
+                        </div>
+                        <button type="button" disabled style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}>
+                            {__('+ Add Row', 'nexusforms')}
+                        </button>
+                    </div>
+                )}
+
+                {type === 'html' && (
+                    <div className="nexusforms-html-content">
+                        {fieldData.htmlContent ? (
+                            <div dangerouslySetInnerHTML={{ __html: fieldData.htmlContent }} />
+                        ) : (
+                            <p style={{ fontStyle: 'italic', color: '#64748b' }}>
+                                {__('(HTML content will be displayed here)', 'nexusforms')}
+                            </p>
+                        )}
+                    </div>
+                )}
+
+                {type === 'section' && (
+                    <div className="nexusforms-section-break">
+                        {fieldData.sectionTitle && (
+                            <h3 className="section-title">{fieldData.sectionTitle}</h3>
+                        )}
+                        {fieldData.sectionDescription && (
+                            <p className="section-description">{fieldData.sectionDescription}</p>
+                        )}
+                        <hr className="section-divider" />
+                    </div>
+                )}
+
                 {description && <p className="nexusforms-description">{description}</p>}
             </div>
         );
