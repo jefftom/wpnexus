@@ -410,6 +410,7 @@ class NexusForms_Renderer {
                     break;
                 case 'html':
                 case 'section':
+                case 'page':
                     // These fields don't store data
                     break;
                 default:
@@ -745,6 +746,20 @@ class NexusForms_Renderer {
                     $html .= '<p class="section-description">' . esc_html($section_desc) . '</p>';
                 }
                 $html .= '<hr class="section-divider">';
+                $html .= '</div>';
+                return $html;
+
+            case 'page':
+                // Page break - marks the end of a page
+                $page_title = $field['pageTitle'] ?? '';
+                $page_desc = $field['pageDescription'] ?? '';
+                $html = '<div class="nexusforms-page-break" data-page-break="true">';
+                if ($page_title) {
+                    $html .= '<div class="page-title">' . esc_html($page_title) . '</div>';
+                }
+                if ($page_desc) {
+                    $html .= '<div class="page-description">' . esc_html($page_desc) . '</div>';
+                }
                 $html .= '</div>';
                 return $html;
 

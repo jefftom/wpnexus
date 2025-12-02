@@ -244,9 +244,30 @@ export const FieldSettings = () => {
                     </PanelBody>
                 )}
 
-                <PanelBody title={__('Conditional Logic', 'nexusforms')}>
-                    <ConditionalLogic fieldId={selectedField.id} />
-                </PanelBody>
+                {selectedField.type === 'page' && (
+                    <PanelBody title={__('Page Settings', 'nexusforms')} initialOpen={true}>
+                        <TextControl
+                            label={__('Page Title', 'nexusforms')}
+                            value={selectedField.pageTitle || ''}
+                            onChange={(value) => handleUpdate('pageTitle', value)}
+                            help={__('Title for the next page (optional)', 'nexusforms')}
+                            placeholder={__('Page 2', 'nexusforms')}
+                        />
+
+                        <TextareaControl
+                            label={__('Page Description', 'nexusforms')}
+                            value={selectedField.pageDescription || ''}
+                            onChange={(value) => handleUpdate('pageDescription', value)}
+                            help={__('Description for the next page (optional)', 'nexusforms')}
+                        />
+                    </PanelBody>
+                )}
+
+                {selectedField.type !== 'page' && (
+                    <PanelBody title={__('Conditional Logic', 'nexusforms')}>
+                        <ConditionalLogic fieldId={selectedField.id} />
+                    </PanelBody>
+                )}
             </div>
         </div>
     );

@@ -161,6 +161,13 @@ export const FIELD_TYPES = [
         description: 'Visual section divider',
         category: 'layout',
     },
+    {
+        type: 'page',
+        label: 'Page Break',
+        icon: '📄',
+        description: 'Split form into multiple pages',
+        category: 'layout',
+    },
 ];
 
 export const FIELD_CATEGORIES = [

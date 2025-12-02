@@ -18,6 +18,7 @@
         init() {
             this.bindEvents();
             this.initConditionalLogic();
+            this.initMultiPageForms();
         },
 
         /**
@@ -39,6 +40,10 @@
             // List field events
             $(document).on('click', '.list-add-row', this.handleListAddRow.bind(this));
             $(document).on('click', '.list-remove', this.handleListRemoveRow.bind(this));
+
+            // Multi-page navigation events
+            $(document).on('click', '.nexusforms-next-page', this.handleNextPage.bind(this));
+            $(document).on('click', '.nexusforms-prev-page', this.handlePrevPage.bind(this));
         },
 
         /**
@@ -616,6 +621,288 @@
             $fieldWrapper.removeClass('nexusforms-field-visible').addClass('nexusforms-field-hidden');
             // Disable hidden fields so they don't get submitted
             $fieldWrapper.find('.nexusforms-input').prop('disabled', true);
+        },
+
+        /**
+         * Initialize multi-page forms.
+         */
+        initMultiPageForms() {
+            $('.nexusforms-form').each((index, form) => {
+                const $form = $(form);
+                const $pageBreaks = $form.find('.nexusforms-page-break');
+
+                // Only initialize if form has page breaks
+                if ($pageBreaks.length === 0) {
+                    return;
+                }
+
+                // Split fields into pages
+                const pages = this.splitFormIntoPages($form);
+
+                if (pages.length <= 1) {
+                    return;
+                }
+
+                // Store page data
+                $form.data('pages', pages);
+                $form.data('currentPage', 0);
+                $form.data('totalPages', pages.length);
+
+                // Add progress bar
+                this.addProgressBar($form, pages.length);
+
+                // Add navigation buttons to each page
+                this.addNavigationButtons($form, pages);
+
+                // Show first page
+                this.showPage($form, 0);
+            });
+        },
+
+        /**
+         * Split form fields into pages based on page breaks.
+         *
+         * @param {jQuery} $form Form element.
+         * @return {Array} Array of pages (each page is an array of field elements).
+         */
+        splitFormIntoPages($form) {
+            const pages = [];
+            let currentPage = [];
+
+            $form.find('.nexusforms-field').each(function() {
+                const $field = $(this);
+
+                // If this is a page break, start a new page
+                if ($field.find('.nexusforms-page-break').length > 0) {
+                    if (currentPage.length > 0) {
+                        pages.push(currentPage);
+                        currentPage = [];
+                    }
+                    // Add the page break info to the previous page
+                    if (pages.length > 0) {
+                        const $pageBreak = $field.find('.nexusforms-page-break');
+                        const pageTitle = $pageBreak.find('.page-title').text();
+                        const pageDesc = $pageBreak.find('.page-description').text();
+                        pages[pages.length - 1].pageTitle = pageTitle;
+                        pages[pages.length - 1].pageDescription = pageDesc;
+                    }
+                } else {
+                    currentPage.push($field);
+                }
+            });
+
+            // Add the last page if it has fields
+            if (currentPage.length > 0) {
+                pages.push(currentPage);
+            }
+
+            return pages;
+        },
+
+        /**
+         * Add progress bar to form.
+         *
+         * @param {jQuery} $form Form element.
+         * @param {number} totalPages Total number of pages.
+         */
+        addProgressBar($form, totalPages) {
+            const progressHTML = `
+                <div class="nexusforms-progress-bar">
+                    <div class="progress-text">
+                        <span class="current-page">1</span> / <span class="total-pages">${totalPages}</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" style="width: ${(1 / totalPages) * 100}%"></div>
+                    </div>
+                </div>
+            `;
+
+            $form.prepend(progressHTML);
+        },
+
+        /**
+         * Add navigation buttons to form.
+         *
+         * @param {jQuery} $form Form element.
+         * @param {Array} pages Array of pages.
+         */
+        addNavigationButtons($form, pages) {
+            const $submitButton = $form.find('button[type="submit"]');
+
+            // Replace submit button with navigation container
+            const navHTML = `
+                <div class="nexusforms-page-navigation">
+                    <button type="button" class="nexusforms-prev-page" style="display: none;">
+                        ${this.getI18n('previous', 'Previous')}
+                    </button>
+                    <button type="button" class="nexusforms-next-page">
+                        ${this.getI18n('next', 'Next')}
+                    </button>
+                    <button type="submit" class="nexusforms-submit-button" style="display: none;">
+                        ${$submitButton.text() || this.getI18n('submit', 'Submit')}
+                    </button>
+                </div>
+            `;
+
+            $submitButton.replaceWith(navHTML);
+        },
+
+        /**
+         * Show a specific page.
+         *
+         * @param {jQuery} $form Form element.
+         * @param {number} pageIndex Page index to show.
+         */
+        showPage($form, pageIndex) {
+            const pages = $form.data('pages');
+            const totalPages = pages.length;
+
+            // Hide all fields and page breaks
+            $form.find('.nexusforms-field').hide();
+
+            // Show fields on current page
+            pages[pageIndex].forEach($field => {
+                $field.show();
+            });
+
+            // Update current page
+            $form.data('currentPage', pageIndex);
+
+            // Update progress bar
+            this.updateProgressBar($form, pageIndex + 1, totalPages);
+
+            // Update navigation buttons
+            this.updateNavigationButtons($form, pageIndex, totalPages);
+
+            // Scroll to top of form
+            $('html, body').animate({
+                scrollTop: $form.offset().top - 100
+            }, 300);
+        },
+
+        /**
+         * Update progress bar.
+         *
+         * @param {jQuery} $form Form element.
+         * @param {number} currentPage Current page number (1-indexed).
+         * @param {number} totalPages Total pages.
+         */
+        updateProgressBar($form, currentPage, totalPages) {
+            const $progressBar = $form.find('.nexusforms-progress-bar');
+            const percentage = (currentPage / totalPages) * 100;
+
+            $progressBar.find('.current-page').text(currentPage);
+            $progressBar.find('.progress-fill').css('width', `${percentage}%`);
+        },
+
+        /**
+         * Update navigation buttons visibility.
+         *
+         * @param {jQuery} $form Form element.
+         * @param {number} pageIndex Current page index (0-indexed).
+         * @param {number} totalPages Total pages.
+         */
+        updateNavigationButtons($form, pageIndex, totalPages) {
+            const $prevButton = $form.find('.nexusforms-prev-page');
+            const $nextButton = $form.find('.nexusforms-next-page');
+            const $submitButton = $form.find('.nexusforms-submit-button');
+
+            // Show/hide previous button
+            if (pageIndex === 0) {
+                $prevButton.hide();
+            } else {
+                $prevButton.show();
+            }
+
+            // Show/hide next vs submit button
+            if (pageIndex === totalPages - 1) {
+                $nextButton.hide();
+                $submitButton.show();
+            } else {
+                $nextButton.show();
+                $submitButton.hide();
+            }
+        },
+
+        /**
+         * Handle next page button click.
+         *
+         * @param {Event} e Click event.
+         */
+        handleNextPage(e) {
+            e.preventDefault();
+            const $button = $(e.target);
+            const $form = $button.closest('.nexusforms-form');
+            const currentPage = $form.data('currentPage');
+            const pages = $form.data('pages');
+
+            // Validate current page before advancing
+            if (!this.validatePage($form, currentPage)) {
+                return;
+            }
+
+            // Go to next page
+            if (currentPage < pages.length - 1) {
+                this.showPage($form, currentPage + 1);
+            }
+        },
+
+        /**
+         * Handle previous page button click.
+         *
+         * @param {Event} e Click event.
+         */
+        handlePrevPage(e) {
+            e.preventDefault();
+            const $button = $(e.target);
+            const $form = $button.closest('.nexusforms-form');
+            const currentPage = $form.data('currentPage');
+
+            // Go to previous page
+            if (currentPage > 0) {
+                this.showPage($form, currentPage - 1);
+            }
+        },
+
+        /**
+         * Validate all fields on a specific page.
+         *
+         * @param {jQuery} $form Form element.
+         * @param {number} pageIndex Page index to validate.
+         * @return {boolean} True if page is valid.
+         */
+        validatePage($form, pageIndex) {
+            const pages = $form.data('pages');
+            const pageFields = pages[pageIndex];
+            let isValid = true;
+
+            pageFields.forEach($field => {
+                const $input = $field.find('.nexusforms-input');
+
+                if ($input.length > 0) {
+                    // Clear previous errors
+                    $input.removeClass('error').attr('aria-invalid', 'false');
+                    $field.find('.nexusforms-error').html('');
+
+                    // Validate field
+                    if (!this.validateField($input)) {
+                        isValid = false;
+                    }
+                }
+            });
+
+            return isValid;
+        },
+
+        /**
+         * Get internationalized string.
+         *
+         * @param {string} key I18n key.
+         * @param {string} fallback Fallback text.
+         * @return {string} Internationalized string.
+         */
+        getI18n(key, fallback) {
+            return (window.nexusformsData && window.nexusformsData.i18n && window.nexusformsData.i18n[key]) || fallback;
         },
     };
 

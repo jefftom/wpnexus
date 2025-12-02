@@ -264,6 +264,31 @@ export const FormPreview = ({ formId, buttonText, buttonVariant = 'secondary' })
                     </div>
                 )}
 
+                {type === 'page' && (
+                    <div className="nexusforms-page-break-preview" style={{
+                        padding: '1.5rem',
+                        background: '#eff6ff',
+                        border: '2px dashed #3b82f6',
+                        borderRadius: '8px',
+                        textAlign: 'center',
+                    }}>
+                        <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📄</div>
+                        <div style={{ fontWeight: 600, color: '#1e40af', marginBottom: '0.25rem' }}>
+                            {__('Page Break', 'nexusforms')}
+                        </div>
+                        {fieldData.pageTitle && (
+                            <div style={{ fontWeight: 500, color: '#1f2937', marginTop: '0.75rem' }}>
+                                {__('Next Page:', 'nexusforms')} {fieldData.pageTitle}
+                            </div>
+                        )}
+                        {fieldData.pageDescription && (
+                            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
+                                {fieldData.pageDescription}
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 {description && <p className="nexusforms-description">{description}</p>}
             </div>
         );
