@@ -1,0 +1,683 @@
+/**
+ * Frontend styles for NexusForms.
+ *
+ * @package NexusForms
+ * @since 1.0.0
+ */
+
+/* Form wrapper */
+.nexusforms-wrapper {
+    margin: 2rem 0;
+    max-width: 800px;
+}
+
+/* Form title */
+.nexusforms-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #1e293b;
+}
+
+/* Form description */
+.nexusforms-description {
+    font-size: 1rem;
+    color: #64748b;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+/* Form */
+.nexusforms-form {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Fields container */
+.nexusforms-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Individual field */
+.nexusforms-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Label */
+.nexusforms-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #334155;
+    display: block;
+}
+
+.nexusforms-label .required {
+    color: #dc2626;
+    margin-left: 0.25rem;
+}
+
+/* Input fields */
+.nexusforms-input,
+.nexusforms-textarea,
+.nexusforms-select {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #1e293b;
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.nexusforms-input:focus,
+.nexusforms-textarea:focus,
+.nexusforms-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.nexusforms-textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Error state */
+.nexusforms-input.error,
+.nexusforms-textarea.error,
+.nexusforms-select.error {
+    border-color: #dc2626;
+}
+
+.nexusforms-input.error:focus,
+.nexusforms-textarea.error:focus,
+.nexusforms-select.error:focus {
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+/* Field description */
+.nexusforms-description {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+}
+
+/* Error message */
+.nexusforms-error {
+    font-size: 0.875rem;
+    color: #dc2626;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+/* Radio and checkbox options */
+.nexusforms-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.nexusforms-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+    color: #334155;
+    cursor: pointer;
+}
+
+.nexusforms-option input[type="radio"],
+.nexusforms-option input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+    cursor: pointer;
+}
+
+/* Submit button */
+.nexusforms-submit-wrapper {
+    margin-top: 1.5rem;
+}
+
+.nexusforms-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #ffffff;
+    background-color: #3b82f6;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.nexusforms-submit:hover {
+    background-color: #2563eb;
+}
+
+.nexusforms-submit:active {
+    transform: scale(0.98);
+}
+
+.nexusforms-submit:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.nexusforms-submit-spinner {
+    display: none;
+}
+
+/* Form message */
+.nexusforms-message {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: 6px;
+    font-size: 0.9375rem;
+    display: none;
+}
+
+.nexusforms-message.success {
+    background-color: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+}
+
+.nexusforms-message.error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .nexusforms-form {
+        padding: 1.5rem;
+    }
+
+    .nexusforms-title {
+        font-size: 1.5rem;
+    }
+
+    .nexusforms-submit {
+        width: 100%;
+    }
+}
+
+/* Accessibility - Focus visible */
+.nexusforms-input:focus-visible,
+.nexusforms-textarea:focus-visible,
+.nexusforms-select:focus-visible,
+.nexusforms-submit:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .nexusforms-input,
+    .nexusforms-textarea,
+    .nexusforms-select {
+        border-width: 2px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .nexusforms-input,
+    .nexusforms-textarea,
+    .nexusforms-select,
+    .nexusforms-submit {
+        transition: none;
+    }
+}
+
+/* ==========================================================================
+   Advanced Field Types
+   ========================================================================== */
+
+/* Rating field */
+.nexusforms-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 2rem;
+    user-select: none;
+}
+
+.rating-star {
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.1s;
+}
+
+.rating-star:hover,
+.rating-star.hover {
+    color: #fbbf24;
+    transform: scale(1.1);
+}
+
+.rating-star.selected {
+    color: #f59e0b;
+}
+
+/* Signature field */
+.nexusforms-signature-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.nexusforms-signature-canvas {
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    background-color: #f8fafc;
+    cursor: crosshair;
+    touch-action: none;
+    width: 100%;
+    max-width: 600px;
+    height: 200px;
+}
+
+.nexusforms-signature-canvas:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.signature-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.signature-clear {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #64748b;
+    background-color: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.signature-clear:hover {
+    background-color: #e2e8f0;
+    color: #475569;
+}
+
+.signature-clear:active {
+    transform: scale(0.98);
+}
+
+/* Date picker */
+.nexusforms-date {
+    max-width: 300px;
+}
+
+/* Hidden field - should not be visible */
+.nexusforms-field-hidden {
+    display: none;
+}
+
+/* Responsive adjustments for advanced fields */
+@media (max-width: 640px) {
+    .nexusforms-rating {
+        font-size: 1.75rem;
+    }
+
+    .nexusforms-signature-canvas {
+        height: 150px;
+    }
+}
+
+/* ==========================================================================
+   Additional Field Types (Tier 1 + 2)
+   ========================================================================== */
+
+/* Time picker */
+.nexusforms-time {
+    max-width: 200px;
+}
+
+/* Name field */
+.nexusforms-name-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* Address field */
+.nexusforms-address-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+}
+
+.nexusforms-address-wrapper .address-field.full {
+    grid-column: 1 / -1;
+}
+
+/* Multi-select */
+.nexusforms-multiselect {
+    min-height: 120px;
+}
+
+/* Consent field */
+.nexusforms-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+    cursor: pointer;
+}
+
+.nexusforms-consent input[type="checkbox"] {
+    margin-top: 0.25rem;
+    flex-shrink: 0;
+}
+
+.nexusforms-consent .consent-text {
+    line-height: 1.6;
+}
+
+/* List/Repeater field */
+.nexusforms-list-wrapper {
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 1rem;
+    background: #f8fafc;
+}
+
+.list-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #475569;
+}
+
+.list-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.list-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.list-column input {
+    width: 100%;
+}
+
+.list-column.list-actions {
+    width: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.list-remove {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    color: #dc2626;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.list-remove:hover {
+    background: #fee2e2;
+    border-color: #dc2626;
+}
+
+.list-add-row {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #3b82f6;
+    background: #fff;
+    border: 1px solid #3b82f6;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.list-add-row:hover {
+    background: #3b82f6;
+    color: #fff;
+}
+
+/* HTML content field */
+.nexusforms-html-content {
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 6px;
+    line-height: 1.6;
+}
+
+.nexusforms-html-content h1,
+.nexusforms-html-content h2,
+.nexusforms-html-content h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+.nexusforms-html-content p {
+    margin: 0.5rem 0;
+}
+
+/* Section break */
+.nexusforms-section-break {
+    margin: 2rem 0;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 0.5rem 0;
+}
+
+.section-description {
+    color: #64748b;
+    margin: 0 0 1rem 0;
+}
+
+.section-divider {
+    border: none;
+    border-top: 2px solid #cbd5e1;
+    margin: 0;
+}
+
+/* Responsive adjustments for new fields */
+@media (max-width: 640px) {
+    .nexusforms-name-wrapper,
+    .nexusforms-address-wrapper {
+        grid-template-columns: 1fr;
+    }
+
+    .nexusforms-address-wrapper .address-field.full {
+        grid-column: 1;
+    }
+}
+
+/* Conditional Logic - Show/Hide Transitions */
+.nexusforms-field {
+    transition: opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease, padding 0.3s ease;
+    overflow: hidden;
+}
+
+.nexusforms-field-visible {
+    opacity: 1;
+    max-height: 5000px;
+}
+
+.nexusforms-field-hidden {
+    opacity: 0;
+    max-height: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+    pointer-events: none;
+}
+
+/* Multi-Page Forms */
+
+/* Progress Bar */
+.nexusforms-progress-bar {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+
+.nexusforms-progress-bar .progress-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #475569;
+}
+
+.nexusforms-progress-bar .current-page {
+    color: #3b82f6;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.nexusforms-progress-bar .progress-track {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.nexusforms-progress-bar .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+    border-radius: 9999px;
+    transition: width 0.4s ease;
+}
+
+/* Page Navigation */
+.nexusforms-page-navigation {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+
+.nexusforms-prev-page,
+.nexusforms-next-page,
+.nexusforms-submit-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.nexusforms-prev-page {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.nexusforms-prev-page:hover {
+    background: #e2e8f0;
+}
+
+.nexusforms-next-page,
+.nexusforms-submit-button {
+    background: #3b82f6;
+    color: white;
+    flex: 1;
+}
+
+.nexusforms-next-page:hover,
+.nexusforms-submit-button:hover {
+    background: #2563eb;
+}
+
+/* Page Break (hidden in frontend, only shows in builder) */
+.nexusforms-page-break {
+    display: none;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .nexusforms-page-navigation {
+        flex-direction: column;
+    }
+
+    .nexusforms-prev-page,
+    .nexusforms-next-page,
+    .nexusforms-submit-button {
+        width: 100%;
+    }
+}
+
+/* Calculation Fields */
+.nexusforms-calculation {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border: 2px solid #86efac;
+    border-radius: 8px;
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #15803d;
+    min-width: 120px;
+}
+
+.nexusforms-calculation .calculation-currency,
+.nexusforms-calculation .calculation-percent {
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.nexusforms-calculation .calculation-currency {
+    margin-right: 0.25rem;
+}
+
+.nexusforms-calculation .calculation-percent {
+    margin-left: 0.25rem;
+}
+
+.nexusforms-calculation .calculation-value {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Calculation field in focus/hover state */
+.nexusforms-field:hover .nexusforms-calculation {
+    border-color: #4ade80;
+    box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+}
